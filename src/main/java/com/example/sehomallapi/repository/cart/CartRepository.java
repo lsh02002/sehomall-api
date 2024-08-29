@@ -1,4 +1,4 @@
-package com.example.superproject1.repository.cart;
+package com.example.sehomallapi.repository.cart;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

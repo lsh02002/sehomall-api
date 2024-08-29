@@ -1,4 +1,4 @@
-package com.example.superproject1.service.exceptions;
+package com.example.sehomallapi.service.exceptions;
 
 import lombok.Getter;
 

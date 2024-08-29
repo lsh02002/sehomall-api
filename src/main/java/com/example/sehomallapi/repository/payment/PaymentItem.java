@@ -1,6 +1,6 @@
-package com.example.superproject1.repository.payment;
+package com.example.sehomallapi.repository.payment;
 
-import com.example.superproject1.repository.item.Item;
+import com.example.sehomallapi.repository.item.Item;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;

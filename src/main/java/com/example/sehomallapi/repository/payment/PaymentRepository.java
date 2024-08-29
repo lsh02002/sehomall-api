@@ -1,4 +1,4 @@
-package com.example.superproject1.repository.payment;
+package com.example.sehomallapi.repository.payment;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

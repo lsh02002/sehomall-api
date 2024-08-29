@@ -1,1 +1,32 @@
-spring.application.name=sehomall-api
+server:
+  port: 8080
+  error:
+    include-exception: true     # ??? exception? ??? ???? ??
+    path: '/error'               # ??? ??? Handler? ??
+    whitelabel:
+      enabled: true             # ?? ?? ??? ????? ??? ?? ??? ?? ??
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+  datasource: # DATABASE
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_NM}
+    password: ${DB_PW}
+
+  jpa: # JPA
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
+file:
+  upload-dir: src/main/resources/static/images/

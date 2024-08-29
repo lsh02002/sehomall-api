@@ -1,6 +1,6 @@
-package com.example.superproject1.repository.cart;
+package com.example.sehomallapi.repository.cart;
 
-import com.example.superproject1.repository.item.Item;
+import com.example.sehomallapi.repository.item.Item;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,6 +1,6 @@
-package com.example.superproject1.web.dto.payment;
+package com.example.sehomallapi.web.dto.payment;
 
-import com.example.superproject1.web.dto.item.ItemResponse;
+import com.example.sehomallapi.web.dto.item.ItemResponse;
 import lombok.Builder;
 import lombok.Getter;
 

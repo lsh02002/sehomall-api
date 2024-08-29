@@ -1,4 +1,4 @@
-package com.example.superproject1.web.dto.payment;
+package com.example.sehomallapi.web.dto.payment;
 
 import lombok.Getter;
 import lombok.Setter;

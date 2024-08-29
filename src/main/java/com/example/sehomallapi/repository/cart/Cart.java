@@ -1,6 +1,6 @@
-package com.example.superproject1.repository.entity;
+package com.example.sehomallapi.repository.cart;
 
-import com.example.superproject1.repository.users.User;
+import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
 

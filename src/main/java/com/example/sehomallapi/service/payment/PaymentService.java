@@ -1,17 +1,18 @@
-package com.example.superproject1.service.payment;
+package com.example.sehomallapi.service.payment;
 
-import com.example.superproject1.repository.item.Item;
-import com.example.superproject1.repository.item.ItemRepository;
-import com.example.superproject1.repository.payment.Payment;
-import com.example.superproject1.repository.payment.PaymentItem;
-import com.example.superproject1.repository.payment.PaymentItemRepository;
-import com.example.superproject1.repository.payment.PaymentRepository;
-import com.example.superproject1.web.dto.item.FileResponse;
-import com.example.superproject1.web.dto.item.ItemResponse;
-import com.example.superproject1.web.dto.payment.PaymentItemRequest;
-import com.example.superproject1.web.dto.payment.PaymentItemResponse;
-import com.example.superproject1.web.dto.payment.PaymentRequest;
-import com.example.superproject1.web.dto.payment.PaymentResponse;
+import com.example.sehomallapi.repository.item.Item;
+import com.example.sehomallapi.repository.item.ItemRepository;
+import com.example.sehomallapi.repository.payment.Payment;
+import com.example.sehomallapi.repository.payment.PaymentItem;
+import com.example.sehomallapi.repository.payment.PaymentItemRepository;
+import com.example.sehomallapi.repository.payment.PaymentRepository;
+import com.example.sehomallapi.service.exceptions.NotFoundException;
+import com.example.sehomallapi.web.dto.item.FileResponse;
+import com.example.sehomallapi.web.dto.item.ItemResponse;
+import com.example.sehomallapi.web.dto.payment.PaymentItemRequest;
+import com.example.sehomallapi.web.dto.payment.PaymentItemResponse;
+import com.example.sehomallapi.web.dto.payment.PaymentRequest;
+import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,7 +41,7 @@ public class PaymentService {
     }
 
     public PaymentResponse getPaymentById(Long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Payment not found"));
+        Payment payment = paymentRepository.findById(id).orElseThrow(() -> new NotFoundException("Payment not found", id));
         List<PaymentItem> paymentItems = paymentItemRepository.findByPaymentId(id);
 
         return convertToPaymentResponse(payment, paymentItems);
@@ -59,7 +60,7 @@ public class PaymentService {
 
     private PaymentItem convertToPaymentItemEntity(PaymentItemRequest itemRequest, Payment payment) {
         Item item = itemRepository.findById(itemRequest.getItemId())
-                .orElseThrow(() -> new IllegalArgumentException("Item not found"));
+                .orElseThrow(() -> new NotFoundException("Item not found", itemRequest.getItemId()));
 
         return PaymentItem.builder()
                 .item(item)
