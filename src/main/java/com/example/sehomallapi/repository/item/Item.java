@@ -5,8 +5,10 @@ import com.example.sehomallapi.repository.payment.PaymentItem;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,6 +53,10 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @CreatedDate
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
 
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<PaymentItem> paymentItems = new ArrayList<>();

@@ -23,12 +23,12 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 
         if(authorities.isEmpty()){
-            response.sendRedirect("/auth/access-denied");
+            response.sendRedirect("/user/access-denied");
         } else {
             String auth = authorities.stream()
                     .map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
 
-            response.sendRedirect("/auth/access-denied?roles=" +
+            response.sendRedirect("/user/access-denied?roles=" +
                     URLEncoder.encode(auth, StandardCharsets.UTF_8));
         }
     }

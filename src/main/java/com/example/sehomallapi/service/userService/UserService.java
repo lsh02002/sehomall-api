@@ -78,16 +78,16 @@ public class UserService {
             throw new ConflictException("이미 입력하신 " + email + " 이메일로 가입된 계정이 있습니다.", email);
         } else if(signupRequest.getNickname().length()>30){
             throw new BadRequestException("닉네임은 30자리 이하여야 합니다.", signupRequest.getNickname());
-        }else if(!signupRequest.getPhoneNumber().matches("01\\d{9}")){
+        }else if(signupRequest.getPhoneNumber() != null && !signupRequest.getPhoneNumber().matches("01\\d{9}")){
             throw new BadRequestException("전화번호 형식이 올바르지 않습니다.", signupRequest.getPhoneNumber());
-        } else if(userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())){
+        } else if(signupRequest.getPhoneNumber() != null && userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())){
             throw new ConflictException("이미 입력하신 "+signupRequest.getPhoneNumber()+" 전화번호로 가입된 계정이 있습니다.",signupRequest.getPhoneNumber());
         }else if(!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]+$")
                 ||!(password.length()>=8&&password.length()<=20)){
             throw new BadRequestException("비밀번호는 8자 이상 20자 이하 숫자와 영문소문자 조합 이어야 합니다.",password);
         } else if(!signupRequest.getPasswordConfirm().equals(password)) {
             throw new BadRequestException("비밀번호와 비밀번호 확인이 같지 않습니다.","password : "+password+", password_confirm : "+signupRequest.getPasswordConfirm());
-        } else if(!(signupRequest.getGender().equals("남성") || signupRequest.getGender().equals("여성"))){
+        } else if(signupRequest.getGender() != null && !(signupRequest.getGender().equals("남성") || signupRequest.getGender().equals("여성"))){
             throw new BadRequestException("성별 형식이 올바르지 않습니다.", signupRequest.getGender());
         }
 
@@ -95,7 +95,11 @@ public class UserService {
 
         Roles roles = rolesRepository.findByName("ROLE_USER");
 
-        LocalDate birthDate = LocalDate.parse(signupRequest.getBirthDate(), DateTimeFormatter.ISO_DATE);
+        LocalDate birthDate = null;
+
+        if(signupRequest.getBirthDate() != null) {
+            birthDate = LocalDate.parse(signupRequest.getBirthDate(), DateTimeFormatter.ISO_DATE);
+        }
 
         User user = User.builder()
                 .email(signupRequest.getEmail())
@@ -150,5 +154,13 @@ public class UserService {
         UserResponse authResponse = new UserResponse(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
 
         return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponse);
+    }
+
+    public boolean isNicknameExisted(String nickname){
+        return userRepository.existsByNickname(nickname);
+    }
+
+    public boolean isEmailExisted(String email){
+        return userRepository.existsByEmail(email);
     }
 }

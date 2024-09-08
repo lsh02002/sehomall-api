@@ -33,6 +33,16 @@ public class UserController {
         return ResponseEntity.ok((UserResponse) tokenAndResponse.get(1));
     }
 
+    @GetMapping("/is-nickname-existed/{nickname}")
+    public boolean isNicknameExisted(@PathVariable(name = "nickname") String nickname){
+        return userService.isNicknameExisted(nickname);
+    }
+
+    @GetMapping("/is-email-existed/{email}")
+    public boolean isEmailExisted(@PathVariable(name = "email") String email){
+        return userService.isEmailExisted(email);
+    }
+
     @GetMapping(value = "/entrypoint")
     public void entrypointException(@RequestParam(name = "token", required = false) String token) {
         if (token==null) throw new NotAcceptableException("로그인(Jwt 토큰)이 필요합니다.", null);
