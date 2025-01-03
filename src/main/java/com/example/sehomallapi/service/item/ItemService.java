@@ -1,6 +1,5 @@
 package com.example.sehomallapi.service.item;
 
-import com.example.sehomallapi.repository.category.CategoryRepository;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;

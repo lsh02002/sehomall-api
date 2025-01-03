@@ -40,7 +40,7 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItemsByCategory(category, pageable));
     }
 
-    @PostMapping(consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping
     public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ItemRequest itemRequest, @RequestPart List<MultipartFile> files) {
         ItemResponse response = itemService.createItem(itemRequest, files, findUserByToken.findUser(customUserDetails));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
