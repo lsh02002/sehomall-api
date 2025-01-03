@@ -12,7 +12,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -32,27 +34,32 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getItemById(id));
     }
 
+    @GetMapping("/category/{category}")
+    public ResponseEntity<Page<ItemResponse>> getItemsByCategory(@PathVariable String category, Pageable pageable) {
+        return ResponseEntity.ok(itemService.getAllItemsByCategory(category, pageable));
+    }
+
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails,@RequestBody ItemRequest itemRequest) {
-        ItemResponse response = itemService.createItem(itemRequest, findUserByToken.findUser(customUserDetails));
+    public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ItemRequest itemRequest, @RequestPart List<MultipartFile> files) {
+        ItemResponse response = itemService.createItem(itemRequest, files, findUserByToken.findUser(customUserDetails));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ItemResponse> updateItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id, @RequestBody ItemRequest itemRequest) {
-        ItemResponse response = itemService.updateItem(id, itemRequest, findUserByToken.findUser(customUserDetails));
+    public ResponseEntity<ItemResponse> updateItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id, @RequestPart ItemRequest itemRequest, @RequestPart(required = false) List<MultipartFile> files) {
+        ItemResponse response = itemService.updateItem(id, itemRequest, files, findUserByToken.findUser(customUserDetails));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<ItemResponse>> getItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+    public ResponseEntity<Page<ItemResponse>> getItemByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
         Page<ItemResponse> response = itemService.getAllItemsByUser(findUserByToken.findUser(customUserDetails), pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
-        itemService.deleteItem(id);
+    public ResponseEntity<Void> deleteItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id) {
+        itemService.deleteItem(id, customUserDetails.getId());
         return ResponseEntity.noContent().build();
     }
 }

@@ -17,5 +17,4 @@ public class ItemRequest {
     private String description;
     private String category;
     private int deliveryFee;
-    private List<MultipartFile> file;
 }

@@ -1,6 +1,8 @@
-package com.example.sehomallapi.service.userService;
+package com.example.sehomallapi.service.users;
 
 import com.example.sehomallapi.config.security.JwtTokenProvider;
+import com.example.sehomallapi.repository.cart.Cart;
+import com.example.sehomallapi.repository.cart.CartRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.repository.users.userRoles.Roles;
@@ -18,10 +20,6 @@ import com.example.sehomallapi.web.dto.users.UserResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +36,9 @@ public class UserService {
     private final RolesRepository rolesRepository;
     private final UserRolesRepository userRolesRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CartRepository cartRepository;
 
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
     @PostConstruct
     private void insertRoleUserAndRoleAdminToNewDb(){
@@ -117,6 +115,9 @@ public class UserService {
                 .user(user)
                 .roles(roles)
                 .build());
+
+        Cart cart = Cart.builder().user(user).build();
+        cartRepository.save(cart);
 
         SignupResponse signupResponse = SignupResponse.builder()
                 .userId(user.getId())

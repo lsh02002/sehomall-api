@@ -5,6 +5,7 @@ import com.example.sehomallapi.repository.payment.PaymentItem;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -35,13 +36,13 @@ public class Item {
     @Column(nullable = false)
     private String size;
 
-    @Column(name = "care_guide", nullable = false)
+    @Column(name = "care_guide")
     private String careGuide;
 
     @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false)
+    @Column
     private String description;
 
     @Column(nullable = false)
@@ -58,6 +59,9 @@ public class Item {
     @Column(name = "create_at")
     private LocalDateTime createAt;
 
+    @Builder.Default
+    private Long views = 0L;
+
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<PaymentItem> paymentItems = new ArrayList<>();
 
@@ -67,5 +71,3 @@ public class Item {
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
 }
-
-

@@ -1,9 +1,9 @@
-package com.example.sehomallapi.web.controller.user;
+package com.example.sehomallapi.web.controller.users;
 
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.AccessDeniedException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
-import com.example.sehomallapi.service.userService.UserService;
+import com.example.sehomallapi.service.users.UserService;
 import com.example.sehomallapi.web.dto.users.LoginRequest;
 import com.example.sehomallapi.web.dto.users.SignupRequest;
 import com.example.sehomallapi.web.dto.users.UserResponse;

@@ -52,14 +52,14 @@ public class FileService {
             // 이미지 파일 저장
             Path path = Paths.get(UPLOAD_DIR + fileName);
             if (Files.exists(path)) { // 이미 같은 이름의 파일이 존재하는 경우
-                fileName = fileCount.incrementAndGet() + "_" + fileName;
+                fileName = "a" + fileCount.incrementAndGet() + fileName;
                 fileUrl = "/images/" + fileName;
                 path = Paths.get(UPLOAD_DIR + fileName);
             }
             Files.write(path, multipartFile.getBytes());
 
             // 파일 엔티티 생성
-            image = new File().builder()
+            image = File.builder()
                     .fileName(fileName)
                     .fileSize(fileSize)
                     .fileExtension(fileExtension)
@@ -84,7 +84,17 @@ public class FileService {
         fileRepository.delete(file);
     }
 
-    public void deleteAllFiles(Item item) {
+    public void deleteAllFiles(Item item){
+
+        for (File file : item.getFiles()) {
+            Path path = Paths.get(UPLOAD_DIR + file.getFileName());
+            try {
+                Files.deleteIfExists(path);
+            } catch (Exception e) {
+                throw new NotFoundException("삭제할 파일을 찾을 수 없습니다.", file.getFileName());
+            }
+        }
+
         fileRepository.deleteAll(item.getFiles());
         item.getFiles().clear();
     }

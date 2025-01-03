@@ -1,9 +1,11 @@
 package com.example.sehomallapi.service.item;
 
+import com.example.sehomallapi.repository.category.CategoryRepository;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
 import com.example.sehomallapi.repository.users.User;
+import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.item.FileResponse;
@@ -13,9 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -34,17 +38,33 @@ public class ItemService {
                 .map(this::convertToItemResponse);
     }
 
+    @Transactional
     public ItemResponse getItemById(Long id) {
-        return itemRepository.findById(id)
-                .map(this::convertToItemResponse)
+        Optional<Item> item = itemRepository.findById(id);
+        item.get().setViews(item.get().getViews()+1);
+
+        return item.map(this::convertToItemResponse)
                 .orElseThrow(()->new NotFoundException("해당 아이템을 찾을 수 없습니다.", id));
+
     }
 
-    public ItemResponse createItem(ItemRequest itemRequest, User user) {
+    @Transactional
+    public Page<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
+        return itemRepository.findByCategory(category, pageable)
+                .map(this::convertToItemResponse);
+    }
+
+    @Transactional
+    public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> files, User user) {
+
+        if(itemRequest.getName() == null || itemRequest.getName().trim().isEmpty()){
+            throw new BadRequestException("상품명이 비어있습니다", null);
+        }
+
         Item item = convertToItemEntity(itemRequest);
 
         // 이미지 저장
-        updateFileFromRequest(item, itemRequest);
+        updateFileFromRequest(item, files);
 
         // 연관관계 형성
         item.setUser(user);
@@ -55,7 +75,8 @@ public class ItemService {
         return convertToItemResponse(item);
     }
 
-    public ItemResponse updateItem(Long id, ItemRequest itemRequest, User user) {
+    @Transactional
+    public ItemResponse updateItem(Long id, ItemRequest itemRequest, List<MultipartFile> files, User user) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
@@ -66,14 +87,19 @@ public class ItemService {
             }
 
             // item 수정
-            updateItemFromRequest(item, itemRequest);
+            updateItemFromRequest(item, itemRequest, files);
             return convertToItemResponse(item);
         } else {
             throw new NotFoundException("아이템 업데이트 실패: 아이템을 찾을 수 없습니다.", itemRequest.getName());
         }
     }
 
-    public void deleteItem(Long id) {
+    @Transactional
+    public void deleteItem(Long id, Long userId) {
+        Item item = itemRepository.findByIdAndUserId(id, userId)
+                        .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", id));
+
+        fileService.deleteAllFiles(item);
         itemRepository.deleteById(id);
     }
 
@@ -88,6 +114,8 @@ public class ItemService {
                 .description(item.getDescription())
                 .category(item.getCategory())
                 .deliveryFee(item.getDeliveryFee())
+                .userId(item.getUser().getId())
+                .views(item.getViews())
                 .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
                 .build();
     }
@@ -108,7 +136,7 @@ public class ItemService {
                 .build();
     }
 
-    private void updateItemFromRequest(Item item, ItemRequest itemRequest) {
+    private void updateItemFromRequest(Item item, ItemRequest itemRequest, List<MultipartFile> files) {
         item.setCount(itemRequest.getCount());
         item.setPrice(itemRequest.getPrice());
         item.setSize(itemRequest.getSize());
@@ -121,7 +149,7 @@ public class ItemService {
         // 기존 이미지 삭제 후 새 이미지 업로드
         fileService.deleteAllFiles(item);
         itemRepository.save(item);
-        updateFileFromRequest(item, itemRequest);
+        updateFileFromRequest(item, files);
 
         // item 저장
         itemRepository.save(item);
@@ -138,8 +166,8 @@ public class ItemService {
     }
 
     // 사진 업로드 및 연관관계
-    private void updateFileFromRequest(Item item, ItemRequest itemRequest) {
-        for (MultipartFile file : itemRequest.getFile()) {
+    private void updateFileFromRequest(Item item, List<MultipartFile> files) {
+        for (MultipartFile file : files) {
             item.getFiles().add(fileService.createFile(file, item));
         }
     }

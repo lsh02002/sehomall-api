@@ -17,5 +17,7 @@ public class ItemResponse {
     private String description;
     private String category;
     private int deliveryFee;
+    private Long userId;
+    private Long views;
     private List<FileResponse> files;
 }

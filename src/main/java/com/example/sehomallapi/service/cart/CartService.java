@@ -9,6 +9,7 @@ import com.example.sehomallapi.repository.item.ItemRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
+import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.cart.CartAllSearchResponse;
 import com.example.sehomallapi.web.dto.cart.CartItemRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,8 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
 
     public CartItemRequest addCartItem(Long userId , CartItemRequest cartItemRequest) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("error"));
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
         System.out.println(itemId);
@@ -34,14 +33,11 @@ public class CartService {
         System.out.println(itemPrice);
         Integer userItemCount = cartItemRequest.getCount();
 
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("error"));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
         Integer itemCount = item.getCount();
 
         CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
-        if (cart == null){
-            cart = Cart.builder().user(user).build();
-            cartRepository.save(cart);
-        }
+
         if(userItemCount > itemCount){
             throw new NotAcceptableException("물건 최대 개수는 " + itemCount + " 입니다.",itemCount.toString());
         }
@@ -75,13 +71,10 @@ public class CartService {
 
     public CartItemRequest updateCartItem(Long userId, CartItemRequest cartItemRequest){
         Cart cart = cartRepository.findByUserId(userId);
-        Long cartId = cart.getId();
         Long itemId = cartItemRequest.getItemId();
         System.out.println(itemId);
-        Item item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("error"));
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
         CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
-        Long cartItemId = cartItem.getId();
-        Integer itemQuantity = cartItemRequest.getCount();
 
         cartItem.setCount(cartItemRequest.getCount());
         cartItemRepository.save(cartItem);
