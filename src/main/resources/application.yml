@@ -6,6 +6,18 @@ server:
     whitelabel:
       enabled: true             # ?? ?? ??? ????? ??? ?? ??? ?? ??
 
+cloud:
+  aws:
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    s3:
+      bucket: sehoawsbucket
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
+
 spring:
   servlet:
     multipart:
@@ -28,5 +40,5 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
-file:
-  upload-dir: src/main/resources/static/images/
+#file:
+#  upload-dir: src/main/resources/static/images/
