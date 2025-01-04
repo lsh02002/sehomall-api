@@ -4,6 +4,7 @@ import com.example.sehomallapi.config.filters.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,7 +48,8 @@ public class SecurityConfig {
                                 // Jwt 토큰이 필요한 엔트리포인트를 기입해 주세요.
                                 .requestMatchers("/user/test1/**").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
-                                .requestMatchers("/**").permitAll())
+                                .requestMatchers("/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/image/**").permitAll())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

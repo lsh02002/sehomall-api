@@ -6,11 +6,15 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.concurrent.TimeUnit;
+
 @Configuration
 @EnableWebMvc
 public class SecurityMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/images/**").addResourceLocations("file:///src/main/resources/static/images/");
+        registry.addResourceHandler("/images/**")
+                .addResourceLocations("classpath:/static/images/");
+
     }
 }
