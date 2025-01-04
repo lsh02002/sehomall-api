@@ -12,5 +12,5 @@ public class CartAllSearchResponse {
     private Integer count;
     private String itemName;
     private Integer price;
-    private String fileName;
+    private String fileUrl;
 }

@@ -64,7 +64,7 @@ public class CartService {
                         .itemName(cartItem.getItem().getName())
                         .price(cartItem.getItem().getPrice())
                         // 이미지 url로 바꿔야함
-                        .fileName(cartItem.getItem().getFiles().get(0).getFileName())
+                        .fileUrl(cartItem.getItem().getFiles().get(0).getFileUrl())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -82,4 +82,3 @@ public class CartService {
         return cartItemRequest;
     }
 }
-

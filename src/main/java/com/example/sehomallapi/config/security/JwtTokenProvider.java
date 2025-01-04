@@ -57,7 +57,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setIssuedAt(now)
                 .setSubject(email)
-                .setExpiration(new Date(now.getTime() + 1000L * 60 * 60))
+                .setExpiration(new Date(now.getTime() + 1000L * 60 * 60 * 24))
                 .signWith(SignatureAlgorithm.HS256, key)
                 .compact();
     }
