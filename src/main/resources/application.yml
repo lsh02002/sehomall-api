@@ -21,7 +21,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
 server:
-  port: 443
+  port: 8090
   ssl:
     key-store: ${KEY_STORE}
     key-store-type: PKCS12
