@@ -18,6 +18,9 @@ public class CartItem {
     @Column()
     private Integer count;
 
+    @Builder.Default
+    private Boolean checked = false;
+
     @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;

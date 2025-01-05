@@ -12,4 +12,5 @@ import lombok.Setter;
 public class CartItemRequest {
     private Long itemId;
     private Integer count;
+    private Boolean checked;
 }

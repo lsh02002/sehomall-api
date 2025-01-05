@@ -116,9 +116,6 @@ public class UserService {
                 .roles(roles)
                 .build());
 
-        Cart cart = Cart.builder().user(user).build();
-        cartRepository.save(cart);
-
         SignupResponse signupResponse = SignupResponse.builder()
                 .userId(user.getId())
                 .nickname(user.getNickname())

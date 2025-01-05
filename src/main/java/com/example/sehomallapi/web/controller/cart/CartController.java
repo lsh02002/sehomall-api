@@ -42,4 +42,15 @@ public class CartController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countCartItems(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return ResponseEntity.ok(cartService.getItemCount(customUserDetails.getId()));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCartItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id){
+        cartService.deleteCartItem(customUserDetails.getId(), id);
+        return ResponseEntity.ok("삭제된 아이템 목록: " + id);
+    }
 }

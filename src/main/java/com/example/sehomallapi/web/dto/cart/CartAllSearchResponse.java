@@ -13,4 +13,5 @@ public class CartAllSearchResponse {
     private String itemName;
     private Integer price;
     private String fileUrl;
+    private Boolean checked;
 }
