@@ -1,27 +1,7 @@
-server:
-  port: 8090
-  error:
-    include-exception: true     # ??? exception? ??? ???? ??
-    path: '/error'               # ??? ??? Handler? ??
-    whitelabel:
-      enabled: true             # ?? ?? ??? ????? ??? ?? ??? ?? ??
-
-cloud:
-  aws:
-    credentials:
-      access-key: ${ACCESS_KEY}
-      secret-key: ${SECRET_KEY}
-    s3:
-      bucket: sehoawsbucket
-    region:
-      static: ap-southeast-2
-    stack:
-      auto: false
-
 spring:
   profiles:
-    active:
-      on-profile: develop
+    active: develop
+
   servlet:
     multipart:
       max-file-size: 20MB
@@ -43,5 +23,24 @@ spring:
     database: mysql
     database-platform: org.hibernate.dialect.MySQL8Dialect
 
+server:
+  port: 8090
+  error:
+    include-exception: true     # ??? exception? ??? ???? ??
+    path: '/error'               # ??? ??? Handler? ??
+    whitelabel:
+      enabled: true             # ?? ?? ??? ????? ??? ?? ??? ?? ??
+
+cloud:
+  aws:
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    s3:
+      bucket: sehoawsbucket
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
 #file:
 #  upload-dir: src/main/resources/static/images/

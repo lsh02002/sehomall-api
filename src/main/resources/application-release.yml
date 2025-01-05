@@ -1,3 +1,28 @@
+spring:
+  profiles:
+    active: release
+
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
+  datasource: # DATABASE
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_NM}
+    password: ${DB_PW}
+
+  jpa: # JPA
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+
 server:
   port: 443
   ssl:
@@ -22,31 +47,6 @@ cloud:
       static: ap-southeast-2
     stack:
       auto: false
-
-spring:
-  profiles:
-    active:
-      on-profile: release
-  servlet:
-    multipart:
-      max-file-size: 20MB
-      max-request-size: 20MB
-
-  datasource: # DATABASE
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_NM}
-    password: ${DB_PW}
-
-  jpa: # JPA
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL8Dialect
 
 #file:
 #  upload-dir: src/main/resources/static/images/
