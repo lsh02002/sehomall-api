@@ -62,6 +62,10 @@ public class Item {
     @Builder.Default
     private Long views = 0L;
 
+    @Builder.Default
+    @Column(name = "heart_count")
+    private Long heartCount = 0L;
+
     @OneToMany(mappedBy = "item", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<PaymentItem> paymentItems = new ArrayList<>();
 

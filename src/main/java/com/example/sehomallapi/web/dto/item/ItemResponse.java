@@ -19,5 +19,6 @@ public class ItemResponse {
     private int deliveryFee;
     private Long userId;
     private Long views;
+    private Long heartCount;
     private List<FileResponse> files;
 }

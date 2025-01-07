@@ -102,6 +102,13 @@ public class ItemService {
         itemRepository.deleteById(id);
     }
 
+    public Long getItemHeartCount(Long itemId) {
+        Item item = itemRepository.findById(itemId)
+                .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
+
+        return item.getHeartCount();
+    }
+
     private ItemResponse convertToItemResponse(Item item) {
         return ItemResponse.builder()
                 .id(item.getId())
