@@ -32,7 +32,7 @@ public class CartService {
     private final UserRepository userRepository;
 
     @Transactional
-    @CacheEvict(key="#userId", value = "cart")
+    @CachePut(key="#userId", value = "cart")
     public CartItemRequest addCartItem(Long userId , CartItemRequest cartItemRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("error"));
         Cart cart = cartRepository.findByUserId(userId);
@@ -67,7 +67,7 @@ public class CartService {
         return cartItemRequest;
     }
 
-    @CacheEvict(key = "#userId", value = "cart")
+    @CachePut(key = "#userId", value = "cart")
     public CartAllResponse findCartItems(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         Long cartId = cart.getId();
@@ -92,7 +92,7 @@ public class CartService {
     }
 
     @Transactional
-    @CacheEvict(key = "#userId", value = "cart")
+    @CachePut(key = "#userId", value = "cart")
     public CartItemRequest updateCartItem(Long userId, CartItemRequest cartItemRequest){
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
@@ -107,7 +107,7 @@ public class CartService {
         return cartItemRequest;
     }
 
-    @CacheEvict(key = "#userId", value = "cart")
+    @CachePut(key = "#userId", value = "cart")
     public Integer getItemCount(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         return cartItemRepository.countByCart(cart);
