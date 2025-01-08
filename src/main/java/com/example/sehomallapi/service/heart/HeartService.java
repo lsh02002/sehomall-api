@@ -11,6 +11,7 @@ import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.heart.HeartRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +22,7 @@ public class HeartService {
     private final ItemRepository itemRepository;
 
     @Transactional
+
     public void insert(Long userId, Long itemId) {
 
         User user =userRepository.findById(userId)

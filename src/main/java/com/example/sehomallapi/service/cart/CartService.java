@@ -10,9 +10,13 @@ import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
+import com.example.sehomallapi.web.dto.cart.CartAllResponse;
 import com.example.sehomallapi.web.dto.cart.CartAllSearchResponse;
 import com.example.sehomallapi.web.dto.cart.CartItemRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +31,7 @@ public class CartService {
     private final ItemRepository itemRepository;
     private final UserRepository userRepository;
 
+//    @Cacheable(key="#userId", value = "cart")
     public CartItemRequest addCartItem(Long userId , CartItemRequest cartItemRequest) {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("error"));
         Cart cart = cartRepository.findByUserId(userId);
@@ -61,13 +66,14 @@ public class CartService {
         return cartItemRequest;
     }
 
-    public List<CartAllSearchResponse> findCartItems(Long userId){
+//    @Cacheable(key = "#userId", value = "cart")
+    public CartAllResponse findCartItems(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         Long cartId = cart.getId();
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
         System.out.println(cartItems);
 
-        return cartItems.stream()
+        List<CartAllSearchResponse> searchResponse = cartItems.stream()
                 .map(cartItem -> CartAllSearchResponse.builder()
                         .itemId(cartItem.getItem().getId())
                         .count(cartItem.getCount())
@@ -78,8 +84,13 @@ public class CartService {
                         .checked(cartItem.getChecked())
                         .build())
                 .collect(Collectors.toList());
+
+        return CartAllResponse.builder()
+                .cartAllSearchResponses(searchResponse)
+                .build();
     }
 
+    @CachePut(key = "#userId", value = "cart")
     public CartItemRequest updateCartItem(Long userId, CartItemRequest cartItemRequest){
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
@@ -94,12 +105,14 @@ public class CartService {
         return cartItemRequest;
     }
 
-    public Long getItemCount(Long userId){
+//    @Cacheable(key = "#userId", value = "cart")
+    public Integer getItemCount(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         return cartItemRepository.countByCart(cart);
     }
 
     @Transactional
+//    @CacheEvict(key = "#userId", value = "cart")
     public void deleteCartItem(Long userId, Long itemId){
         Cart cart = cartRepository.findByUserId(userId);
         cartItemRepository.deleteByCartAndItemId(cart, itemId);

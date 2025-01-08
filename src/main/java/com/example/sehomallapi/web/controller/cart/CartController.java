@@ -2,6 +2,7 @@ package com.example.sehomallapi.web.controller.cart;
 
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.cart.CartService;
+import com.example.sehomallapi.web.dto.cart.CartAllResponse;
 import com.example.sehomallapi.web.dto.cart.CartAllSearchResponse;
 import com.example.sehomallapi.web.dto.cart.CartItemRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +29,11 @@ public class CartController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CartAllSearchResponse>> findCartItems(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<CartAllResponse> findCartItems(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         Long userId = customUserDetails.getId();
-        List<CartAllSearchResponse> responseList = cartService.findCartItems(userId);
+        CartAllResponse cartAllResponse = cartService.findCartItems(userId);
 
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(cartAllResponse);
     }
 
     @PatchMapping
@@ -44,7 +45,7 @@ public class CartController {
     }
 
     @GetMapping("/count")
-    public ResponseEntity<Long> countCartItems(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+    public ResponseEntity<Integer> countCartItems(@AuthenticationPrincipal CustomUserDetails customUserDetails){
         return ResponseEntity.ok(cartService.getItemCount(customUserDetails.getId()));
     }
 

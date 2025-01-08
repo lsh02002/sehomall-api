@@ -52,7 +52,7 @@ public class SecurityConfig {
                                 // Jwt 토큰이 필요한 엔트리포인트를 기입해 주세요.
                                 .requestMatchers("/user/test1/**").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
-                                .requestMatchers("/**").permitAll()
+                                .requestMatchers( "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 

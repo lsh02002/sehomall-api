@@ -6,6 +6,9 @@ import com.example.sehomallapi.repository.payment.Payment;
 import com.example.sehomallapi.repository.payment.PaymentItem;
 import com.example.sehomallapi.repository.payment.PaymentItemRepository;
 import com.example.sehomallapi.repository.payment.PaymentRepository;
+import com.example.sehomallapi.repository.users.User;
+import com.example.sehomallapi.repository.users.UserRepository;
+import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
@@ -14,6 +17,7 @@ import com.example.sehomallapi.web.dto.payment.PaymentItemResponse;
 import com.example.sehomallapi.web.dto.payment.PaymentRequest;
 import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +30,12 @@ public class PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentItemRepository paymentItemRepository;
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Transactional
-    public PaymentResponse createPayment(PaymentRequest paymentRequest) {
-        Payment payment = convertToPaymentEntity(paymentRequest);
+    public PaymentResponse createPayment(Long userId, PaymentRequest paymentRequest) {
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("해당 유저가 존재하지 않습니다.", null));
+        Payment payment = convertToPaymentEntity(user, paymentRequest);
         paymentRepository.save(payment);
 
         List<PaymentItem> paymentItems = paymentRequest.getItems().stream()
@@ -40,14 +46,15 @@ public class PaymentService {
         return convertToPaymentResponse(payment, paymentItems);
     }
 
-    public PaymentResponse getPaymentById(Long id) {
-        Payment payment = paymentRepository.findById(id).orElseThrow(() -> new NotFoundException("Payment not found", id));
+    public PaymentResponse getPaymentByUserIdAndPaymentId(Long userId, Long id) {
+        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("해당 유저가 존재하지 않습니다.", null));
+        Payment payment = paymentRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Payment not found", id));
         List<PaymentItem> paymentItems = paymentItemRepository.findByPaymentId(id);
 
         return convertToPaymentResponse(payment, paymentItems);
     }
 
-    private Payment convertToPaymentEntity(PaymentRequest paymentRequest) {
+    private Payment convertToPaymentEntity(User user, PaymentRequest paymentRequest) {
         return Payment.builder()
                 .productSum(paymentRequest.getProductSum())
                 .email(paymentRequest.getEmail())
@@ -55,6 +62,7 @@ public class PaymentService {
                 .deliveryAddress(paymentRequest.getDeliveryAddress())
                 .deliveryPhone(paymentRequest.getDeliveryPhone())
                 .deliveryMessage(paymentRequest.getDeliveryMessage())
+                .user(user)
                 .build();
     }
 
