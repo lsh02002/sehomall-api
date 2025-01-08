@@ -11,6 +11,7 @@ import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.heart.HeartRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class HeartService {
     private final ItemRepository itemRepository;
 
     @Transactional
-
+    @CacheEvict(key = "#userId", value = "heart")
     public void insert(Long userId, Long itemId) {
 
         User user =userRepository.findById(userId)
@@ -49,6 +50,7 @@ public class HeartService {
     }
 
     @Transactional
+    @CacheEvict(key = "#userId", value = "heart")
     public void delete(Long userId, Long itemId) {
 
         User user = userRepository.findById(userId)
@@ -66,9 +68,9 @@ public class HeartService {
         heartRepository.delete(heart);
     }
 
+    @CacheEvict(key = "#userId", value = "heart")
     public Boolean isHearted(Long userId, Long itemId) {
         Long count = heartRepository.countByUserIdAndItemId(userId, itemId);
         return count > 0;
     }
-
 }
