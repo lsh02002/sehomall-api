@@ -32,7 +32,7 @@ public class FileService {
 
         try {
             String fileName = file.getOriginalFilename();
-            String fileUrl = "https://" + bucket + ".s3.ap-southeast-2.amazonaws.com/" + fileName;
+            String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());

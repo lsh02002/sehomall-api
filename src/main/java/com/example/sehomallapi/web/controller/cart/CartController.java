@@ -21,7 +21,6 @@ public class CartController {
 
     @PostMapping
     public ResponseEntity<CartItemRequest> addCartItem(@AuthenticationPrincipal CustomUserDetails customUserDetails , @RequestBody CartItemRequest cartItemRequest) {
-        System.out.println(customUserDetails.toString());
         Long userId = customUserDetails.getId();
         CartItemRequest response = cartService.addCartItem(userId, cartItemRequest);
 

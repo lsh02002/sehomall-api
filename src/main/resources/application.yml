@@ -19,7 +19,7 @@ spring:
       port: 6379
 
   jpa: # JPA
-    show-sql: true
+    show-sql: false
     hibernate:
       ddl-auto: update
     properties:
@@ -50,9 +50,9 @@ cloud:
       access-key: ${ACCESS_KEY}
       secret-key: ${SECRET_KEY}
     s3:
-      bucket: sehoawsbucket
+      bucket: sehoawsbucket2
     region:
-      static: ap-southeast-2
+      static: ap-northeast-2
     stack:
       auto: false
 
