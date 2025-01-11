@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -122,6 +123,8 @@ public class ItemService {
     }
 
     private ItemResponse convertToItemResponse(Item item) {
+        String createAt = item.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+
         return ItemResponse.builder()
                 .id(item.getId())
                 .count(item.getCount())
@@ -135,7 +138,7 @@ public class ItemService {
                 .userId(item.getUser().getId())
                 .views(item.getViews())
                 .heartCount(item.getHeartCount())
-                .createdAt(item.getCreateAt())
+                .createAt(createAt)
                 .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
                 .build();
     }
