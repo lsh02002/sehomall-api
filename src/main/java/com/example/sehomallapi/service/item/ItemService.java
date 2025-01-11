@@ -135,6 +135,7 @@ public class ItemService {
                 .userId(item.getUser().getId())
                 .views(item.getViews())
                 .heartCount(item.getHeartCount())
+                .createdAt(item.getCreateAt())
                 .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
                 .build();
     }
