@@ -33,7 +33,7 @@ public class ItemService {
 
     @CachePut(key = "'all'", value = "item")
     public Page<ItemResponse> getAllItems(Pageable pageable) {
-        return itemRepository.findAllByCountGreaterThan(0, pageable)
+        return itemRepository.findAll(pageable)
                 .map(this::convertToItemResponse);
     }
 
