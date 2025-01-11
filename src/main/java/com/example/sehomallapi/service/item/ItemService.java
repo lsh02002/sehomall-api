@@ -134,6 +134,7 @@ public class ItemService {
                 .deliveryFee(item.getDeliveryFee())
                 .userId(item.getUser().getId())
                 .views(item.getViews())
+                .heartCount(item.getHeartCount())
                 .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
                 .build();
     }
