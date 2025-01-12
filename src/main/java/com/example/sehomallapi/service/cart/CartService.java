@@ -83,6 +83,7 @@ public class CartService {
                         // 이미지 url로 바꿔야함
                         .fileUrl(cartItem.getItem().getFiles().get(0).getFileUrl())
                         .checked(cartItem.getChecked())
+                        .heartCount(cartItem.getItem().getHeartCount())
                         .build())
                 .collect(Collectors.toList());
 

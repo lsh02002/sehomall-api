@@ -14,4 +14,5 @@ public class CartAllSearchResponse {
     private Integer price;
     private String fileUrl;
     private Boolean checked;
+    private Long heartCount;
 }
