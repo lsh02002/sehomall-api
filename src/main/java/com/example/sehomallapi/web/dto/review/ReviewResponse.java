@@ -1,8 +1,11 @@
 package com.example.sehomallapi.web.dto.review;
 
+import com.example.sehomallapi.web.dto.item.FileResponse;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,4 +17,5 @@ public class ReviewResponse {
     private String content;
     private Integer rating;
     private String createAt;
+    private List<FileResponse> files;
 }

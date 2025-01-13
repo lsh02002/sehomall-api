@@ -1,17 +1,16 @@
 package com.example.sehomallapi.service.review;
 
+import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
 import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.repository.review.ReviewRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
-import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.service.item.FileService;
-import com.example.sehomallapi.service.users.UserService;
-import com.example.sehomallapi.web.dto.item.ItemResponse;
+import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,6 +85,7 @@ public class ReviewService {
                    .rating(reviewRequest.getRating())
                    .item(item)
                    .user(user)
+                   .files(new ArrayList<>())
                    .build();
 
            reviewRepository.save(review);
@@ -146,6 +147,9 @@ public class ReviewService {
    }
 
     private void updateFileFromReviewRequest(Review review, List<MultipartFile> files) {
+        if(files == null)
+            return;
+
         for (MultipartFile file : files) {
             review.getFiles().add(fileService.createReviewFile(file, review));
         }
@@ -156,10 +160,22 @@ public class ReviewService {
 
         return ReviewResponse.builder()
                 .id(review.getId())
+                .nickname(review.getUser().getNickname())
                 .itemId(review.getItem().getId())
                 .content(review.getContent())
                 .rating(review.getRating())
                 .createAt(createAt)
+                .files(review.getFiles().stream().map(this::convertToReviewFileResponse).toList())
+                .build();
+    }
+
+    private FileResponse convertToReviewFileResponse(File file) {
+        return FileResponse.builder()
+                .id(file.getId())
+                .fileName(file.getFileName())
+                .fileSize(file.getFileSize())
+                .fileExtension(file.getFileExtension())
+                .fileUrl(file.getFileUrl())
                 .build();
     }
 }

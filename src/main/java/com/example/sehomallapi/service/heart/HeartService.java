@@ -71,7 +71,6 @@ public class HeartService {
 
     @CachePut(key = "#userId", value = "heart")
     public Boolean isHearted(Long userId, Long itemId) {
-        Long count = heartRepository.countByUserIdAndItemId(userId, itemId);
-        return count > 0;
+        return heartRepository.existsByUserIdAndItemId(userId, itemId);
     }
 }

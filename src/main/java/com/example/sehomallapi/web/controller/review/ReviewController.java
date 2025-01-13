@@ -41,17 +41,17 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> createReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody ReviewRequest reviewRequest, @RequestPart List<MultipartFile> files) {
+    public ResponseEntity<Boolean> createReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ReviewRequest reviewRequest, @RequestPart(required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(reviewService.createReview(customUserDetails.getId(), reviewRequest, files));
     }
 
-    @PutMapping
-    public ResponseEntity<Boolean> updateReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, Long reviewId, @RequestBody ReviewRequest reviewRequest, @RequestPart List<MultipartFile> files) {
+    @PutMapping("/{reviewId}")
+    public ResponseEntity<Boolean> updateReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long reviewId, @RequestPart ReviewRequest reviewRequest, @RequestPart(required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(reviewService.updateReview(customUserDetails.getId(), reviewId, reviewRequest, files));
     }
 
-    @DeleteMapping
-    public ResponseEntity<Boolean> deleteReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, Long reviewId) {
+    @DeleteMapping("/{reviewId}")
+    public ResponseEntity<Boolean> deleteReview(@AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long reviewId) {
         return ResponseEntity.ok(reviewService.deleteReview(customUserDetails.getId(), reviewId));
     }
 }

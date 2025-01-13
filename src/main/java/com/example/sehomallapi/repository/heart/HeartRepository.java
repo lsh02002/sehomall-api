@@ -9,5 +9,5 @@ import java.util.Optional;
 
 public interface HeartRepository extends JpaRepository<Heart, Long> {
     Optional<Heart> findByUserAndItem(User user, Item item);
-    Long countByUserIdAndItemId(Long userId, Long itemId);
+    Boolean existsByUserIdAndItemId(Long userId, Long itemId);
 }
