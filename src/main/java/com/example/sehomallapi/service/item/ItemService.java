@@ -31,21 +31,21 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final FileService fileService;
 
-//    @CachePut(key = "'all'", value = "item")
+    @CachePut(key = "'all'", value = "item")
     public Page<ItemResponse> getAllItems(Pageable pageable) {
         return itemRepository.findAll(pageable)
                 .map(this::convertToItemResponse);
     }
 
     @Transactional
-//    @CachePut(key = "#user.id", value = "item")
+    @CachePut(key = "#user.id", value = "item")
     public Page<ItemResponse> getAllItemsByUser(User user, Pageable pageable) {
         return itemRepository.findAllByUser(user, pageable)
                 .map(this::convertToItemResponse);
     }
 
     @Transactional
-//    @CachePut(key = "#id", value = "item")
+    @CachePut(key = "#id", value = "item")
     public ItemResponse getItemById(Long id) {
         Optional<Item> item = itemRepository.findById(id);
         item.get().setViews(item.get().getViews()+1);
@@ -56,14 +56,14 @@ public class ItemService {
     }
 
     @Transactional
-//    @CachePut(key = "'all'", value = "item")
+    @CachePut(key = "'all'", value = "item")
     public Page<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
         return itemRepository.findByCategory(category, pageable)
                 .map(this::convertToItemResponse);
     }
 
     @Transactional
-//    @CachePut(key = "#user.id", value = "item")
+    @CachePut(key = "#user.id", value = "item")
     public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> files, User user) {
 
         if(itemRequest.getName() == null || itemRequest.getName().trim().isEmpty()){
@@ -85,7 +85,7 @@ public class ItemService {
     }
 
     @Transactional
-//    @CachePut(key = "#user.id", value = "item")
+    @CachePut(key = "#user.id", value = "item")
     public ItemResponse updateItem(Long id, ItemRequest itemRequest, List<MultipartFile> files, User user) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
@@ -105,7 +105,7 @@ public class ItemService {
     }
 
     @Transactional
-//    @CacheEvict(key = "#userId", value = "item")
+    @CacheEvict(key = "#userId", value = "item")
     public void deleteItem(Long id, Long userId) {
         Item item = itemRepository.findByIdAndUserId(id, userId)
                         .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", id));
@@ -114,7 +114,7 @@ public class ItemService {
         itemRepository.deleteById(id);
     }
 
-//    @CachePut(key = "#itemId", value = "item")
+    @CachePut(key = "#itemId", value = "item")
     public Long getItemHeartCount(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
