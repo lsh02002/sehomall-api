@@ -97,7 +97,8 @@ public class UserService {
         LocalDateTime birthDate = null;
 
         if(signupRequest.getBirthDate() != null) {
-            birthDate = LocalDateTime.parse(signupRequest.getBirthDate(), DateTimeFormatter.ISO_DATE);
+            LocalDate date = LocalDate.parse(signupRequest.getBirthDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            birthDate = date.atStartOfDay();
         }
 
         User user = User.builder()
