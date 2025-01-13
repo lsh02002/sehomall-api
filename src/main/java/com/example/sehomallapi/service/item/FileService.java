@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.FileRepository;
 import com.example.sehomallapi.repository.item.Item;
+import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,33 @@ public class FileService {
                     .fileExtension(fileName != null ? getFileExtension(fileName) : null)
                     .fileUrl(fileUrl)
                     .item(item)
+                    .review(null)
+                    .build();
+        } catch (IOException e) {
+            throw new NotFoundException("파일이 존재하지 않습니다.", file.getName());
+        }
+    }
+
+    public File createReviewFile(MultipartFile file, Review review) {
+        // 이미지 파일이 없을 경을 경우
+        if (file.isEmpty()) throw new NotFoundException("File is empty", file.getName());
+
+        try {
+            String fileName = file.getOriginalFilename();
+            String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(file.getContentType());
+            metadata.setContentLength(file.getSize());
+
+            amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
+
+            return File.builder()
+                    .fileName(fileName)
+                    .fileSize(file.getSize())
+                    .fileExtension(fileName != null ? getFileExtension(fileName) : null)
+                    .fileUrl(fileUrl)
+                    .item(null)
+                    .review(review)
                     .build();
         } catch (IOException e) {
             throw new NotFoundException("파일이 존재하지 않습니다.", file.getName());

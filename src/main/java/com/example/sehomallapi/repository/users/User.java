@@ -47,7 +47,7 @@ public class User {
     private String gender;
 
     @Column(name = "birth_date")
-    private LocalDate birthDate;
+    private LocalDateTime birthDate;
 
     @CreatedDate
     @Column(name = "create_at")

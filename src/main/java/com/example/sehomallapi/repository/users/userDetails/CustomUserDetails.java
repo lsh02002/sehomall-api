@@ -1,5 +1,11 @@
 package com.example.sehomallapi.repository.users.userDetails;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -31,10 +37,19 @@ public class CustomUserDetails implements UserDetails {
     private String address;
     @Getter
     private String gender;
-    @Getter
-    private LocalDate birthDate;
 
     @Getter
+    @JsonProperty("birthDate")
+    @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    private LocalDateTime birthDate;
+
+    @Getter
+    @JsonProperty("createAt")
+    @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime createAt;
 
     private List<String> authorities;

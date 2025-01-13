@@ -1,5 +1,6 @@
 package com.example.sehomallapi.repository.item;
 
+import com.example.sehomallapi.repository.review.Review;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -33,4 +34,8 @@ public class File {
     @ManyToOne
     @JoinColumn(name = "item_key")
     private Item item;
+
+    @ManyToOne
+    @JoinColumn(name = "review_key")
+    private Review review;
 }
