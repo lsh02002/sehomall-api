@@ -135,7 +135,7 @@ public class ItemService {
                 .description(item.getDescription())
                 .category(item.getCategory())
                 .deliveryFee(item.getDeliveryFee())
-                .userId(item.getUser().getId())
+                .userNickname(item.getUser().getNickname())
                 .views(item.getViews())
                 .heartCount(item.getHeartCount())
                 .createAt(createAt)

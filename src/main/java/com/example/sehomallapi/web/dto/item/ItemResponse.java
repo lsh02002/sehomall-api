@@ -19,7 +19,7 @@ public class ItemResponse {
     private String description;
     private String category;
     private int deliveryFee;
-    private Long userId;
+    private String userNickname;
     private Long views;
     private Long heartCount;
     private String createAt;
