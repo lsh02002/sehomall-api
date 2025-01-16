@@ -24,4 +24,5 @@ public class ItemResponse {
     private Long heartCount;
     private String createAt;
     private List<FileResponse> files;
+    private Long reviewCount;
 }

@@ -13,6 +13,7 @@ import java.util.List;
 public class ReviewResponse {
     private Long id;
     private Long itemId;
+    private String itemName;
     private String nickname;
     private String content;
     private Integer rating;

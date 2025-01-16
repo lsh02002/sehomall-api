@@ -2,6 +2,7 @@ package com.example.sehomallapi.repository.item;
 
 import com.example.sehomallapi.repository.cart.CartItem;
 import com.example.sehomallapi.repository.payment.PaymentItem;
+import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -74,4 +75,7 @@ public class Item {
 
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<File> files = new ArrayList<>();
+
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
 }

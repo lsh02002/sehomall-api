@@ -166,6 +166,7 @@ public class ReviewService {
                 .rating(review.getRating())
                 .createAt(createAt)
                 .files(review.getFiles().stream().map(this::convertToReviewFileResponse).toList())
+                .itemName(review.getItem().getName())
                 .build();
     }
 

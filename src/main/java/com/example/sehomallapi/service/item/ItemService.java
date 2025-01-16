@@ -3,10 +3,13 @@ package com.example.sehomallapi.service.item;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
+import com.example.sehomallapi.repository.review.Review;
+import com.example.sehomallapi.repository.review.ReviewRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
+import com.example.sehomallapi.service.users.UserService;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemRequest;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
@@ -29,6 +32,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
+    private final ReviewRepository reviewRepository;
     private final FileService fileService;
 
     @CachePut(key = "'all'", value = "item")
@@ -140,6 +144,7 @@ public class ItemService {
                 .heartCount(item.getHeartCount())
                 .createAt(createAt)
                 .files(item.getFiles().stream().map(this::convertToFileResponse).toList())
+                .reviewCount((long) item.getReviews().size())
                 .build();
     }
 
@@ -156,6 +161,7 @@ public class ItemService {
                 .cartItems(new ArrayList<>())
                 .paymentItems(new ArrayList<>())
                 .files(new ArrayList<>())
+                .reviews(new ArrayList<>())
                 .build();
     }
 
