@@ -156,7 +156,7 @@ public class ReviewService {
     }
 
     private ReviewResponse convertToReviewResponse(Review review) {
-        String createAt = review.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+        String createAt = review.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss"));
 
         return ReviewResponse.builder()
                 .id(review.getId())
