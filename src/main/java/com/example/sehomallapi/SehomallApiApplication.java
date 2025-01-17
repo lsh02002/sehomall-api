@@ -13,14 +13,10 @@ import java.util.TimeZone;
 @SpringBootApplication
 public class SehomallApiApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(SehomallApiApplication.class, args);
-    }
-
-    @PostConstruct
-    public void init() {
-        // timezone 설정
+    public static void main(String[] args)
+    {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
+        SpringApplication.run(SehomallApiApplication.class, args);
     }
 }
 
