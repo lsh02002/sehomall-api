@@ -23,3 +23,4 @@ public class SehomallApiApplication {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
     }
 }
+
