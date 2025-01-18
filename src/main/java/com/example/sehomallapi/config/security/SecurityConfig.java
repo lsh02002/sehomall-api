@@ -51,8 +51,30 @@ public class SecurityConfig {
                 })
                 .authorizeHttpRequests(a->
                         a
-                                // Jwt 토큰이 필요한 엔트리포인트를 기입해 주세요.
-                                .requestMatchers("/user/test1/**").hasAnyRole("USER")
+                                // cart controller
+                                .requestMatchers(HttpMethod.POST, "/cart/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/cart/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.PATCH, "/cart/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/cart/**").hasAnyRole("USER")
+                                // heart controller
+                                .requestMatchers(HttpMethod.POST, "/heart/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/heart/is-hearted/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/heart/**").hasAnyRole("USER")
+                                // item controller
+                                .requestMatchers(HttpMethod.POST, "/api/items/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/api/items/user/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.PUT, "/api/items/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/api/items/**").hasAnyRole("USER")
+                                // pay controller
+                                .requestMatchers(HttpMethod.POST, "/api/payments/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/api/payments/**").hasAnyRole("USER")
+                                // review controller
+                                .requestMatchers(HttpMethod.POST, "/review/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/review/user/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.PUT, "/review/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/review/**").hasAnyRole("USER")
+                                // user controller
+                                .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/test1").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
                                 .requestMatchers( "/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/images/**").permitAll())

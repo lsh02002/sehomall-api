@@ -52,7 +52,7 @@ public class UserController {
     @GetMapping(value = "/entrypoint")
     public void entrypointException(@RequestParam(name = "token", required = false) String token) {
         if (token==null) throw new NotAcceptableException("로그인(Jwt 토큰)이 필요합니다.", null);
-        else throw new NotAcceptableException("로그인이 만료 되었습니다.","유효하지 않은 토큰 : "+ token);
+        else throw new NotAcceptableException("로그인(Jwt 토큰)이 만료 되었습니다. 다시 로그인 하세요", null);
     }
 
     @GetMapping(value = "/access-denied")
