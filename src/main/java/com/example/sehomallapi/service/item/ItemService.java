@@ -70,13 +70,13 @@ public class ItemService {
     @CachePut(key = "#user.id", value = "item")
     public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> files, User user) {
 
-        if(itemRequest.getName().isEmpty()){
+        if(itemRequest.getName().trim().isEmpty()){
             throw new BadRequestException("상품명이 비어있습니다", null);
         } else if(files == null || files.isEmpty()) {
             throw new BadRequestException("상품 사진을 입력하세요", null);
         } else if(itemRequest.getPrice() == 0) {
             throw new BadRequestException("상품 가격을 입력하세요", null);
-        } else if(itemRequest.getSize().isEmpty()){
+        } else if(itemRequest.getSize().trim().isEmpty()){
             throw new BadRequestException("상품 크기를 입력하세요", null);
         } else if(itemRequest.getCount() == 0) {
             throw new BadRequestException("상품 제고량을 입력하세요", null);

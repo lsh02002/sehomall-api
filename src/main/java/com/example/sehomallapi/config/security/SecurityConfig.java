@@ -58,7 +58,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/cart/**").hasAnyRole("USER")
                                 // heart controller
                                 .requestMatchers(HttpMethod.POST, "/heart/**").hasAnyRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/heart/is-hearted/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/heart/is-hearted/**", "/heart/user/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/heart/**").hasAnyRole("USER")
                                 // item controller
                                 .requestMatchers(HttpMethod.POST, "/api/items/**").hasAnyRole("USER")

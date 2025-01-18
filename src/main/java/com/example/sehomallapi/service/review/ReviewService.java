@@ -71,7 +71,7 @@ public class ReviewService {
 
            if(reviewRequest.getItemId() == null) {
                throw new NotFoundException("아이템 아이디란이 비어있습니다.", null);
-           } else if (reviewRequest.getContent() == null){
+           } else if (reviewRequest.getContent().trim().isEmpty()) {
                throw new NotFoundException("내용란이 비어있습니다.", null);
            } else if (reviewRequest.getRating() == null){
                throw new NotFoundException("평가란이 비어있습니다.", null);
