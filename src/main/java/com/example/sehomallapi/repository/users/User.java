@@ -31,6 +31,9 @@ public class User {
     @Column(name = "nickname", nullable = false)
     private String nickname;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 

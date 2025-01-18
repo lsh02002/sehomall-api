@@ -31,6 +31,9 @@ public class CustomUserDetails implements UserDetails {
     private String nickname;
 
     @Getter
+    private String name;
+
+    @Getter
     private String email;
     private String password;
 
@@ -55,7 +58,6 @@ public class CustomUserDetails implements UserDetails {
 
     private List<String> authorities;
 
-    @JsonIgnore
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities.stream().map(SimpleGrantedAuthority::new)

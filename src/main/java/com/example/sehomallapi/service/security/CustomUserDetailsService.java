@@ -34,6 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return CustomUserDetails.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                .name(user.getName())
                 .password(user.getPassword())
                 .nickname(user.getNickname())
                 .phoneNumber(user.getPhoneNumber())

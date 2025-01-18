@@ -37,9 +37,6 @@ public class CartService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("error"));
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
-        System.out.println(itemId);
-        Integer itemPrice = itemRepository.findById(itemId).orElseThrow().getPrice();
-        System.out.println(itemPrice);
         Integer userItemCount = cartItemRequest.getCount();
         Boolean itemChecked = cartItemRequest.getChecked();
 
@@ -72,7 +69,6 @@ public class CartService {
         Cart cart = cartRepository.findByUserId(userId);
         Long cartId = cart.getId();
         List<CartItem> cartItems = cartItemRepository.findByCartId(cartId);
-        System.out.println(cartItems);
 
         List<CartAllSearchResponse> searchResponse = cartItems.stream()
                 .map(cartItem -> CartAllSearchResponse.builder()
@@ -97,7 +93,6 @@ public class CartService {
     public CartItemRequest updateCartItem(Long userId, CartItemRequest cartItemRequest){
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
-        System.out.println(itemId);
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
         CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
 

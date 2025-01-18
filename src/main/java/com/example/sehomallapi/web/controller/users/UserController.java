@@ -6,6 +6,7 @@ import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.users.UserService;
 import com.example.sehomallapi.web.dto.users.LoginRequest;
 import com.example.sehomallapi.web.dto.users.SignupRequest;
+import com.example.sehomallapi.web.dto.users.UserInfoResponse;
 import com.example.sehomallapi.web.dto.users.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,11 @@ public class UserController {
         List<Object> tokenAndResponse = userService.login(loginRequest);
         httpServletResponse.setHeader("Token", (String) tokenAndResponse.get(0));
         return ResponseEntity.ok((UserResponse) tokenAndResponse.get(1));
+    }
+
+    @GetMapping("/info")
+    public UserInfoResponse getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return userService.getUserInfo(customUserDetails);
     }
 
     @GetMapping("/is-nickname-existed/{nickname}")

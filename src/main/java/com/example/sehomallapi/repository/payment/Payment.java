@@ -3,8 +3,10 @@ package com.example.sehomallapi.repository.payment;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +41,13 @@ public class Payment {
 
     @Column(name = "delivery_message")
     private String deliveryMessage;
+
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
+    @CreatedDate
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

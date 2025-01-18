@@ -1,20 +1,19 @@
 package com.example.sehomallapi.web.dto.users;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class SignupRequest {
-    private String email;
-    private String name;
-    private String password;
-    private String passwordConfirm;
+@AllArgsConstructor
+@Builder
+public class UserInfoResponse {
     private String nickname;
+    private String name;
     private String phoneNumber;
+    private String email;
     private String address;
     private String gender;
     private String birthDate;
+    private String createAt;
 }

@@ -2,13 +2,11 @@ package com.example.sehomallapi.service.payment;
 
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
-import com.example.sehomallapi.repository.payment.Payment;
-import com.example.sehomallapi.repository.payment.PaymentItem;
-import com.example.sehomallapi.repository.payment.PaymentItemRepository;
-import com.example.sehomallapi.repository.payment.PaymentRepository;
+import com.example.sehomallapi.repository.payment.*;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
+import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
@@ -34,6 +32,18 @@ public class PaymentService {
 
     @Transactional
     public PaymentResponse createPayment(Long userId, PaymentRequest paymentRequest) {
+        if(paymentRequest.getDeliveryName().isEmpty() || paymentRequest.getDeliveryName().length()>30) {
+            throw new BadRequestException("이름은 비어있지 않고 30자리 이하여야 합니다.", paymentRequest.getDeliveryName());
+        } else if(!paymentRequest.getEmail().matches(".+@.+\\..+")){
+            throw new BadRequestException("이메일을 정확히 입력해주세요.", paymentRequest.getEmail());
+        } else if (paymentRequest.getDeliveryName().matches("01\\d{9}")){
+            throw new BadRequestException("전화번호를 이름으로 사용할수 없습니다.",paymentRequest.getDeliveryName());
+        } else if(!paymentRequest.getDeliveryPhone().matches("01\\d{9}")){
+            throw new BadRequestException("전화번호 형식이 올바르지 않습니다.", paymentRequest.getDeliveryPhone());
+        } else if(paymentRequest.getDeliveryAddress().isEmpty()) {
+            throw new BadRequestException("주소는 비어있지 않아야 합니다.", paymentRequest.getDeliveryName());
+        }
+
         User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("해당 유저가 존재하지 않습니다.", null));
         Payment payment = convertToPaymentEntity(user, paymentRequest);
         paymentRepository.save(payment);
@@ -62,6 +72,7 @@ public class PaymentService {
                 .deliveryAddress(paymentRequest.getDeliveryAddress())
                 .deliveryPhone(paymentRequest.getDeliveryPhone())
                 .deliveryMessage(paymentRequest.getDeliveryMessage())
+                .orderStatus(OrderStatus.ORDERED)
                 .user(user)
                 .build();
     }
@@ -90,6 +101,8 @@ public class PaymentService {
                 .deliveryAddress(payment.getDeliveryAddress())
                 .deliveryPhone(payment.getDeliveryPhone())
                 .deliveryMessage(payment.getDeliveryMessage())
+                .orderStatus(payment.getOrderStatus().toString())
+                .createdAt(payment.getCreateAt().toString())
                 .items(itemResponses)
                 .build();
     }

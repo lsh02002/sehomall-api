@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -40,12 +42,14 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItemsByCategory(category, pageable));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ItemRequest itemRequest, @RequestPart List<MultipartFile> files) {
+    public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ItemRequest itemRequest, @RequestPart(required = false) List<MultipartFile> files) {
         ItemResponse response = itemService.createItem(itemRequest, files, findUserByToken.findUser(customUserDetails));
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<ItemResponse> updateItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id, @RequestPart ItemRequest itemRequest, @RequestPart(required = false) List<MultipartFile> files) {
         ItemResponse response = itemService.updateItem(id, itemRequest, files, findUserByToken.findUser(customUserDetails));
@@ -58,6 +62,7 @@ public class ItemController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id) {
         itemService.deleteItem(id, customUserDetails.getId());

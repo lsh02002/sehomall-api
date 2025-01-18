@@ -5,6 +5,7 @@ import com.example.sehomallapi.repository.cart.Cart;
 import com.example.sehomallapi.repository.cart.CartRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
+import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.repository.users.userRoles.Roles;
 import com.example.sehomallapi.repository.users.userRoles.RolesRepository;
 import com.example.sehomallapi.repository.users.userRoles.UserRoles;
@@ -13,10 +14,7 @@ import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.CustomBadCredentialsException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
-import com.example.sehomallapi.web.dto.users.LoginRequest;
-import com.example.sehomallapi.web.dto.users.SignupRequest;
-import com.example.sehomallapi.web.dto.users.SignupResponse;
-import com.example.sehomallapi.web.dto.users.UserResponse;
+import com.example.sehomallapi.web.dto.users.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -75,11 +73,13 @@ public class UserService {
 
         if(userRepository.existsByEmail(email)){
             throw new ConflictException("이미 입력하신 " + email + " 이메일로 가입된 계정이 있습니다.", email);
-        } else if(signupRequest.getNickname().length()>30){
-            throw new BadRequestException("닉네임은 30자리 이하여야 합니다.", signupRequest.getNickname());
-        }else if(signupRequest.getPhoneNumber() != null && !signupRequest.getPhoneNumber().matches("01\\d{9}")){
+        } else if(signupRequest.getNickname().isEmpty() || signupRequest.getNickname().length()>30){
+            throw new BadRequestException("닉네임은 비어있지 않고 30자리 이하여야 합니다.", signupRequest.getNickname());
+        } else if(signupRequest.getName().isEmpty() || signupRequest.getName().length()>30){
+            throw new BadRequestException("이름은 비어있지 않고 30자리 이하여야 합니다.", signupRequest.getName());
+        } else if(!signupRequest.getPhoneNumber().matches("01\\d{9}")){
             throw new BadRequestException("전화번호 형식이 올바르지 않습니다.", signupRequest.getPhoneNumber());
-        } else if(signupRequest.getPhoneNumber() != null && userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())){
+        } else if(userRepository.existsByPhoneNumber(signupRequest.getPhoneNumber())){
             throw new ConflictException("이미 입력하신 "+signupRequest.getPhoneNumber()+" 전화번호로 가입된 계정이 있습니다.",signupRequest.getPhoneNumber());
         }else if(!password.matches("^(?=.*[a-zA-Z])(?=.*\\d)[a-zA-Z\\d]+$")
                 ||!(password.length()>=8&&password.length()<=20)){
@@ -103,6 +103,7 @@ public class UserService {
 
         User user = User.builder()
                 .email(signupRequest.getEmail())
+                .name(signupRequest.getName())
                 .password(signupRequest.getPassword())
                 .nickname(signupRequest.getNickname())
                 .phoneNumber(signupRequest.getPhoneNumber())
@@ -154,6 +155,22 @@ public class UserService {
         UserResponse authResponse = new UserResponse(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
 
         return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponse);
+    }
+
+    public UserInfoResponse getUserInfo(CustomUserDetails customUserDetails) {
+        String birthDate = customUserDetails.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+        String createAt = customUserDetails.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+
+        return UserInfoResponse.builder()
+                .nickname(customUserDetails.getNickname())
+                .name(customUserDetails.getName())
+                .email(customUserDetails.getEmail())
+                .address(customUserDetails.getAddress())
+                .phoneNumber(customUserDetails.getPhoneNumber())
+                .gender(customUserDetails.getGender())
+                .birthDate(birthDate)
+                .createAt(createAt)
+                .build();
     }
 
     public boolean isNicknameExisted(String nickname){
