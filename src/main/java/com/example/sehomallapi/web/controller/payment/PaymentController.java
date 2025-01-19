@@ -5,6 +5,8 @@ import com.example.sehomallapi.service.payment.PaymentService;
 import com.example.sehomallapi.web.dto.payment.PaymentRequest;
 import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -23,5 +25,10 @@ public class PaymentController {
     @GetMapping("/{id}")
     public ResponseEntity<PaymentResponse> getPaymentByUserIdAndPaymentId(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id) {
         return ResponseEntity.ok(paymentService.getPaymentByUserIdAndPaymentId(customUserDetails.getId(), id));
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<Page<PaymentResponse>> getPaymentsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+        return ResponseEntity.ok(paymentService.getPaymentsByUserId(customUserDetails.getId(), pageable));
     }
 }

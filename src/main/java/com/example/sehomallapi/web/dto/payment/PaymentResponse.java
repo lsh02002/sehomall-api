@@ -16,6 +16,6 @@ public class PaymentResponse {
     private String deliveryPhone;
     private String deliveryMessage;
     private String orderStatus;
-    private String createdAt;
+    private String createAt;
     private List<PaymentItemResponse> items;
 }

@@ -15,6 +15,8 @@ import com.example.sehomallapi.web.dto.payment.PaymentItemResponse;
 import com.example.sehomallapi.web.dto.payment.PaymentRequest;
 import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,6 +66,24 @@ public class PaymentService {
         return convertToPaymentResponse(payment, paymentItems);
     }
 
+    public Page<PaymentResponse> getPaymentsByUserId(Long userId, Pageable pageable) {
+        Page<Payment> payments = paymentRepository.findByUserId(userId, pageable);
+
+        return payments.map(payment->PaymentResponse.builder()
+                .id(payment.getId())
+                .productSum(payment.getProductSum())
+                .email(payment.getEmail())
+                .deliveryName(payment.getDeliveryName())
+                .deliveryAddress(payment.getDeliveryAddress())
+                .deliveryPhone(payment.getDeliveryPhone())
+                .deliveryMessage(payment.getDeliveryMessage())
+                .orderStatus(payment.getOrderStatus().toString())
+                .createAt(payment.getCreateAt().toString())
+                .items(payment.getPaymentItems().stream().map(this::convertToPaymentItemResponse).toList())
+                .build());
+
+    }
+
     private Payment convertToPaymentEntity(User user, PaymentRequest paymentRequest) {
         return Payment.builder()
                 .productSum(paymentRequest.getProductSum())
@@ -102,7 +122,7 @@ public class PaymentService {
                 .deliveryPhone(payment.getDeliveryPhone())
                 .deliveryMessage(payment.getDeliveryMessage())
                 .orderStatus(payment.getOrderStatus().toString())
-                .createdAt(payment.getCreateAt().toString())
+                .createAt(payment.getCreateAt().toString())
                 .items(itemResponses)
                 .build();
     }
@@ -119,12 +139,18 @@ public class PaymentService {
                 .description(item.getDescription())
                 .category(item.getCategory())
                 .deliveryFee(item.getDeliveryFee())
+                .heartCount(item.getHeartCount())
+                .userNickname(item.getUser().getNickname())
+                .views(item.getViews())
+                .reviewCount((long)item.getReviews().size())
+                .createAt(item.getCreateAt().toString())
                 .files(item.getFiles().stream().map(file ->
                         FileResponse.builder()
                                 .id(file.getId())
                                 .fileName(file.getFileName())
                                 .fileSize(file.getFileSize())
                                 .fileExtension(file.getFileExtension())
+                                .fileUrl(file.getFileUrl())
                                 .build()
                 ).collect(Collectors.toList()))
                 .build();

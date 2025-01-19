@@ -67,7 +67,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/items/**").hasAnyRole("USER")
                                 // pay controller
                                 .requestMatchers(HttpMethod.POST, "/api/payments/**").hasAnyRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/api/payments/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/api/payments/**", "/api/payments/user/**").hasAnyRole("USER")
                                 // review controller
                                 .requestMatchers(HttpMethod.POST, "/review/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.GET, "/review/user/**").hasAnyRole("USER")
