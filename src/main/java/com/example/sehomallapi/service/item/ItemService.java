@@ -3,20 +3,17 @@ package com.example.sehomallapi.service.item;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
-import com.example.sehomallapi.repository.review.Review;
-import com.example.sehomallapi.repository.review.ReviewRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.service.exceptions.BadRequestException;
+import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
-import com.example.sehomallapi.service.users.UserService;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemRequest;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,7 +29,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemService {
     private final ItemRepository itemRepository;
-    private final ReviewRepository reviewRepository;
     private final FileService fileService;
 
     @CachePut(key = "'all'", value = "item")
@@ -72,6 +68,8 @@ public class ItemService {
 
         if(itemRequest.getName().trim().isEmpty()){
             throw new BadRequestException("상품명이 비어있습니다", null);
+        } else if(itemRepository.existsByName(itemRequest.getName().trim())){
+            throw new ConflictException("이미 같은 이름의 상품이 있습니다.", itemRequest.getName());
         } else if(files == null || files.isEmpty()) {
             throw new BadRequestException("상품 사진을 입력하세요", null);
         } else if(itemRequest.getPrice() == 0) {

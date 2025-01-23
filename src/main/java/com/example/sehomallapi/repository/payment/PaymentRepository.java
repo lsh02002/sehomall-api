@@ -5,9 +5,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByIdAndUser(Long id, User user);
+    Optional<Payment> findByIdAndUserId(Long id, Long userId);
     Page<Payment> findByUserId(Long userId, Pageable pageable);
+    List<Payment> findByUserEmail(String email);
+
 }

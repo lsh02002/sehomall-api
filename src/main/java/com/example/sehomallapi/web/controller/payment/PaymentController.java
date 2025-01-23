@@ -2,6 +2,7 @@ package com.example.sehomallapi.web.controller.payment;
 
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.payment.PaymentService;
+import com.example.sehomallapi.web.dto.payment.PaymentHistResponse;
 import com.example.sehomallapi.web.dto.payment.PaymentRequest;
 import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,10 @@ public class PaymentController {
     @GetMapping("/user")
     public ResponseEntity<Page<PaymentResponse>> getPaymentsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
         return ResponseEntity.ok(paymentService.getPaymentsByUserId(customUserDetails.getId(), pageable));
+    }
+
+    @GetMapping("/status/{paymentId}/{status}")
+    public ResponseEntity<Boolean> changePaymentStatus(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long paymentId, @PathVariable String status) {
+        return ResponseEntity.ok(paymentService.changePaymentStatus(customUserDetails.getId(), paymentId, status));
     }
 }

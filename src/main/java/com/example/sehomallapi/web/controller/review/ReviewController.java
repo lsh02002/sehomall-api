@@ -2,8 +2,10 @@ package com.example.sehomallapi.web.controller.review;
 
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.review.ReviewService;
+import com.example.sehomallapi.web.dto.item.ItemResponse;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
+import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/review")
@@ -33,6 +36,11 @@ public class ReviewController {
     @GetMapping("/items/{id}")
     public ResponseEntity<Page<ReviewResponse>> getReviewByItemId(@PathVariable Long id, Pageable pageable) {
         return ResponseEntity.ok(reviewService.getReviewsByItemId(id, pageable));
+    }
+
+    @GetMapping("/unreviewed-items")
+    public ResponseEntity<List<ReviewedItemResponse>> getUnReviewedItems(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(reviewService.getUnReviewedItems(customUserDetails.getEmail()));
     }
 
     @GetMapping("/user")

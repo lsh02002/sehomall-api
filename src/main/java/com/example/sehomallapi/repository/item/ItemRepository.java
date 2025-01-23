@@ -12,4 +12,5 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Page<Item> findAllByUser(User user, Pageable pageable);
     Optional<Item> findByIdAndUserId(Long id, Long userId);
     Page<Item> findByCategory(String category, Pageable pageable);
+    Boolean existsByName(String name);
 }

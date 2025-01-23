@@ -67,17 +67,16 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/items/**").hasAnyRole("USER")
                                 // pay controller
                                 .requestMatchers(HttpMethod.POST, "/api/payments/**").hasAnyRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/api/payments/**", "/api/payments/user/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/api/payments/**", "/api/payments/user/**", "/api/payments/status/**").hasAnyRole("USER")
                                 // review controller
                                 .requestMatchers(HttpMethod.POST, "/review/**").hasAnyRole("USER")
-                                .requestMatchers(HttpMethod.GET, "/review/user/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/review/user/**","/review/unreviewed-items/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/review/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/review/**").hasAnyRole("USER")
                                 // user controller
                                 .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/test1").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
-                                .requestMatchers( "/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/images/**").permitAll())
+                                .requestMatchers( "/**").permitAll())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

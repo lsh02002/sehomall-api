@@ -5,23 +5,21 @@ import com.example.sehomallapi.repository.item.ItemRepository;
 import com.example.sehomallapi.repository.payment.*;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
-import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
-import com.example.sehomallapi.web.dto.payment.PaymentItemRequest;
-import com.example.sehomallapi.web.dto.payment.PaymentItemResponse;
-import com.example.sehomallapi.web.dto.payment.PaymentRequest;
-import com.example.sehomallapi.web.dto.payment.PaymentResponse;
+import com.example.sehomallapi.web.dto.payment.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,6 +80,19 @@ public class PaymentService {
                 .items(payment.getPaymentItems().stream().map(this::convertToPaymentItemResponse).toList())
                 .build());
 
+    }
+
+    public Boolean changePaymentStatus(Long userId, Long paymentId, String status) {
+        try {
+            Payment payment = paymentRepository.findByIdAndUserId(paymentId, userId)
+                    .orElseThrow(() -> new NotFoundException("해당 주문사항을 찾을 수 없습니다.", null));
+            payment.setOrderStatus(OrderStatus.valueOf(status));
+            paymentRepository.save(payment);
+
+            return true;
+        } catch (NotFoundException e) {
+            return false;
+        }
     }
 
     private Payment convertToPaymentEntity(User user, PaymentRequest paymentRequest) {

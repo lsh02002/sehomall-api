@@ -34,7 +34,6 @@ public class CartService {
     @Transactional
     @CachePut(key="#userId", value = "cart")
     public CartItemRequest addCartItem(Long userId , CartItemRequest cartItemRequest) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("error"));
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
         Integer userItemCount = cartItemRequest.getCount();
@@ -44,11 +43,6 @@ public class CartService {
         Integer itemCount = item.getCount();
 
         CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
-
-        if (cart == null){
-            cart = Cart.builder().user(user).build();
-            cartRepository.save(cart);
-        }
 
         if(userItemCount > itemCount){
             throw new NotAcceptableException("물건 최대 개수는 " + itemCount + " 입니다.",itemCount.toString());

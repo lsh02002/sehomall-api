@@ -3,16 +3,24 @@ package com.example.sehomallapi.service.review;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
+import com.example.sehomallapi.repository.payment.*;
 import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.repository.review.ReviewRepository;
+import com.example.sehomallapi.repository.review.revieweditem.ReviewedItem;
+import com.example.sehomallapi.repository.review.revieweditem.ReviewedItemRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
+import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.service.item.FileService;
+import com.example.sehomallapi.service.item.ItemService;
+import com.example.sehomallapi.service.payment.PaymentService;
 import com.example.sehomallapi.web.dto.item.FileResponse;
+import com.example.sehomallapi.web.dto.item.ItemResponse;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
+import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -23,17 +31,20 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ReviewService {
     private final ReviewRepository reviewRepository;
+    private final ReviewedItemRepository reviewedItemRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final PaymentRepository paymentRepository;
+    private final PaymentItemRepository paymentItemRepository;
     private final FileService fileService;
+    private final ItemService itemService;
 
     @CachePut(key = "'all'", value = "review")
     public Page<ReviewResponse> getAllReviews(Pageable pageable) {
@@ -80,6 +91,10 @@ public class ReviewService {
            Item item = itemRepository.findById(reviewRequest.getItemId())
                    .orElseThrow(() -> new NotFoundException("입력하신 아이템 아이디로 회원을 찾을 수 없습니다.", reviewRequest.getItemId()));
 
+           if(reviewedItemRepository.existsByItemIdAndUserId(item.getId(), userId)) {
+               throw new BadRequestException("리뷰는 구입하신 상품 하나에 한번만 올릴수 있습니다.", null);
+           }
+
            Review review = Review.builder()
                    .content(reviewRequest.getContent())
                    .rating(reviewRequest.getRating())
@@ -90,6 +105,13 @@ public class ReviewService {
 
            reviewRepository.save(review);
            updateFileFromReviewRequest(review, files);
+
+           ReviewedItem reviewedItem = ReviewedItem.builder()
+                   .item(item)
+                   .user(user)
+                   .build();
+
+           reviewedItemRepository.save(reviewedItem);
 
            return true;
        } catch (ConflictException e) {
@@ -125,7 +147,7 @@ public class ReviewService {
         } catch (ConflictException e) {
             return false;
         }
-   }
+    }
 
    @Transactional
    @CacheEvict(key = "#userId", value = "review")
@@ -144,7 +166,27 @@ public class ReviewService {
        } catch (ConflictException e) {
            return false;
        }
-   }
+    }
+
+    @Transactional
+    public List<ReviewedItemResponse> getUnReviewedItems(String email) {
+        List<Payment> payments = paymentRepository.findByUserEmail(email);
+        List<ReviewedItemResponse> unReviewedItems = new ArrayList<>();
+
+        for(Payment payment : payments){
+            List<PaymentItem> paymentItems = payment.getPaymentItems();
+            for(PaymentItem paymentItem : paymentItems){
+                if(payment.getOrderStatus()== OrderStatus.COMPLETED && !reviewedItemRepository.existsByItemIdAndUserId(paymentItem.getItem().getId(), payment.getUser().getId())){
+                    unReviewedItems.add(ReviewedItemResponse.builder()
+                            .id(paymentItem.getItem().getId())
+                            .name(paymentItem.getItem().getName())
+                            .build());
+                }
+            }
+        }
+
+        return unReviewedItems.stream().distinct().toList();
+    }
 
     private void updateFileFromReviewRequest(Review review, List<MultipartFile> files) {
         if(files == null)

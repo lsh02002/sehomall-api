@@ -112,12 +112,15 @@ public class UserService {
                 .birthDate(birthDate)
                 .build();
 
-        userRepository.save(user);
+        User savedUser = userRepository.save(user);
 
         userRolesRepository.save(UserRoles.builder()
                 .user(user)
                 .roles(roles)
                 .build());
+
+        Cart cart = Cart.builder().user(savedUser).build();
+        cartRepository.save(cart);
 
         SignupResponse signupResponse = SignupResponse.builder()
                 .userId(user.getId())
