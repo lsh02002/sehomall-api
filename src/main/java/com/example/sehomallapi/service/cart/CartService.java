@@ -29,7 +29,6 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
 
     @Transactional
     @CachePut(key="#userId", value = "cart")
@@ -108,5 +107,12 @@ public class CartService {
     public void deleteCartItem(Long userId, Long itemId){
         Cart cart = cartRepository.findByUserId(userId);
         cartItemRepository.deleteByCartAndItemId(cart, itemId);
+    }
+
+    @Transactional
+    @CacheEvict(key = "#userId", value = "cart")
+    public void deleteAllCartItems(Long userId){
+        Cart cart = cartRepository.findByUserId(userId);
+        cartItemRepository.deleteAllByCart(cart);
     }
 }

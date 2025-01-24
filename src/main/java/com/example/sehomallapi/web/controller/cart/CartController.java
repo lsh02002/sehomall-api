@@ -53,4 +53,10 @@ public class CartController {
         cartService.deleteCartItem(customUserDetails.getId(), id);
         return ResponseEntity.ok("삭제된 아이템 목록: " + id);
     }
+
+    @DeleteMapping
+    public ResponseEntity<String> deleteAllCartItems(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        cartService.deleteAllCartItems(customUserDetails.getId());
+        return ResponseEntity.ok("장바구니안의 아이템 모두 삭제");
+    }
 }

@@ -75,7 +75,9 @@ public class UserService {
             throw new ConflictException("이미 입력하신 " + email + " 이메일로 가입된 계정이 있습니다.", email);
         } else if(signupRequest.getNickname().trim().isEmpty() || signupRequest.getNickname().length()>30){
             throw new BadRequestException("닉네임은 비어있지 않고 30자리 이하여야 합니다.", signupRequest.getNickname());
-        } else if(signupRequest.getName().trim().isEmpty() || signupRequest.getName().length()>30){
+        } else if(userRepository.existsByNickname(signupRequest.getNickname())) {
+            throw new BadRequestException("이미 입력하신 " + signupRequest.getNickname() + "닉네임으로 가입된 계정이 있습니다.", signupRequest.getNickname());
+        }else if(signupRequest.getName().trim().isEmpty() || signupRequest.getName().length()>30){
             throw new BadRequestException("이름은 비어있지 않고 30자리 이하여야 합니다.", signupRequest.getName());
         } else if(!signupRequest.getPhoneNumber().matches("01\\d{9}")){
             throw new BadRequestException("전화번호 형식이 올바르지 않습니다.", signupRequest.getPhoneNumber());
@@ -88,6 +90,8 @@ public class UserService {
             throw new BadRequestException("비밀번호와 비밀번호 확인이 같지 않습니다.","password : "+password+", password_confirm : "+signupRequest.getPasswordConfirm());
         } else if(signupRequest.getGender() == null || !(signupRequest.getGender().equals("남성") || signupRequest.getGender().equals("여성"))){
             throw new BadRequestException("성별 형식이 올바르지 않습니다.", signupRequest.getGender());
+        } else if(!signupRequest.getBirthDate().matches("^\\d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$")){
+            throw new BadRequestException("생년월일 형식이 올바르지 않습니다.", signupRequest.getBirthDate());
         }
 
         signupRequest.setPassword(passwordEncoder.encode(signupRequest.getPassword()));
