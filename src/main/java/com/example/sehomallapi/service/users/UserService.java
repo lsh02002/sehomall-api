@@ -75,6 +75,8 @@ public class UserService {
             throw new ConflictException("이미 입력하신 " + email + " 이메일로 가입된 계정이 있습니다.", email);
         } else if(signupRequest.getNickname().trim().isEmpty() || signupRequest.getNickname().length()>30){
             throw new BadRequestException("닉네임은 비어있지 않고 30자리 이하여야 합니다.", signupRequest.getNickname());
+        } else if(!signupRequest.getNickname().matches("^[A-Za-z][A-Za-z0-9]*$")){
+            throw new BadRequestException("닉네임은 영문으로 시작하고 영어 숫자 조합이어야 합니다.", signupRequest.getNickname());
         } else if(userRepository.existsByNickname(signupRequest.getNickname())) {
             throw new BadRequestException("이미 입력하신 " + signupRequest.getNickname() + "닉네임으로 가입된 계정이 있습니다.", signupRequest.getNickname());
         }else if(signupRequest.getName().trim().isEmpty() || signupRequest.getName().length()>30){
