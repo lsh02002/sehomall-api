@@ -40,7 +40,7 @@ public class ReviewController {
 
     @GetMapping("/unreviewed-items")
     public ResponseEntity<List<ReviewedItemResponse>> getUnReviewedItems(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return ResponseEntity.ok(reviewService.getUnReviewedItems(customUserDetails.getEmail()));
+        return ResponseEntity.ok(reviewService.getUnReviewedItems(customUserDetails.getId()));
     }
 
     @GetMapping("/user")

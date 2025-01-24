@@ -57,8 +57,7 @@ public class PaymentService {
     }
 
     public PaymentResponse getPaymentByUserIdAndPaymentId(Long userId, Long id) {
-        User user = userRepository.findById(userId).orElseThrow(()->new NotFoundException("해당 유저가 존재하지 않습니다.", null));
-        Payment payment = paymentRepository.findByIdAndUser(id, user).orElseThrow(() -> new NotFoundException("Payment not found", id));
+        Payment payment = paymentRepository.findByIdAndUserId(id, userId).orElseThrow(() -> new NotFoundException("Payment not found", id));
         List<PaymentItem> paymentItems = paymentItemRepository.findByPaymentId(id);
 
         return convertToPaymentResponse(payment, paymentItems);

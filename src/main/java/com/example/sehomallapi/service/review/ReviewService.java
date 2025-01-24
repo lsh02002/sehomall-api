@@ -95,6 +95,16 @@ public class ReviewService {
                throw new BadRequestException("리뷰는 구입하신 상품 하나에 한번만 올릴수 있습니다.", null);
            }
 
+           ReviewedItemResponse itemResponse = ReviewedItemResponse.builder()
+                   .id(item.getId())
+                   .name(item.getName())
+                   .build();
+
+           List<ReviewedItemResponse> reviewedItemResponses = getUnReviewedItems(user.getId());
+           if(!reviewedItemResponses.contains(itemResponse)) {
+               throw new NotFoundException("해당 상품을 구매하신적이 없으십니다.", null);
+           }
+
            Review review = Review.builder()
                    .content(reviewRequest.getContent())
                    .rating(reviewRequest.getRating())
@@ -169,8 +179,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public List<ReviewedItemResponse> getUnReviewedItems(String email) {
-        List<Payment> payments = paymentRepository.findByUserEmail(email);
+    @CachePut(key = "#userId", value = "review")
+    public List<ReviewedItemResponse> getUnReviewedItems(Long userId) {
+        List<Payment> payments = paymentRepository.findByUserId(userId);
         List<ReviewedItemResponse> unReviewedItems = new ArrayList<>();
 
         for(Payment payment : payments){

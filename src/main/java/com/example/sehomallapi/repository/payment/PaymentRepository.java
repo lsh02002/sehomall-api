@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    Optional<Payment> findByIdAndUser(Long id, User user);
     Optional<Payment> findByIdAndUserId(Long id, Long userId);
     Page<Payment> findByUserId(Long userId, Pageable pageable);
-    List<Payment> findByUserEmail(String email);
-
+    List<Payment> findByUserId(Long userId);
 }
