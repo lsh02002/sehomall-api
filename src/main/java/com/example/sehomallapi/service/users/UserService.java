@@ -17,6 +17,10 @@ import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.users.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -171,6 +176,7 @@ public class UserService {
         String createAt = customUserDetails.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
 
         return UserInfoResponse.builder()
+                .userId(customUserDetails.getId())
                 .nickname(customUserDetails.getNickname())
                 .name(customUserDetails.getName())
                 .email(customUserDetails.getEmail())
@@ -188,5 +194,59 @@ public class UserService {
 
     public boolean isEmailExisted(String email){
         return userRepository.existsByEmail(email);
+    }
+
+    public List<Object> adminLogin(LoginRequest request) {
+        if(request.getEmail()==null||request.getPassword()==null){
+            throw new BadRequestException("이메일이나 비밀번호 값이 비어있습니다.","email : "+request.getEmail()+", password : "+request.getPassword());
+        }
+        User user;
+
+        if(request.getEmail().matches(".+@.+\\..+")) {
+            user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("입력하신 이메일의 계정을 찾을 수 없습니다.", request.getEmail()));
+        } else {
+            throw new BadRequestException("이메일이 잘못 입력되었습니다.", request.getEmail());
+        }
+        String p1 = user.getPassword();
+
+        if(!passwordEncoder.matches(request.getPassword(), p1)){
+            throw new CustomBadCredentialsException("비밀번호가 일치하지 않습니다.", request.getPassword());
+        }
+
+        List<String> roles = user.getUserRoles().stream()
+                .map(UserRoles::getRoles).map(Roles::getName).toList();
+
+        if(!roles.contains("ROLE_ADMIN")){
+            throw new BadRequestException("관리자 권한이 없습니다.", request.getEmail());
+        }
+
+        SignupResponse signupResponse = SignupResponse.builder()
+                .userId(user.getId())
+                .nickname(user.getNickname())
+                .build();
+
+        UserResponse authResponse = new UserResponse(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
+
+        return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponse);
+    }
+
+    public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable){
+        List<UserInfoResponse> userInfoResponses = userRepository.findAll(pageable)
+                .stream().map(user->UserInfoResponse.builder()
+                .nickname(user.getNickname())
+                .name(user.getName())
+                .email(user.getEmail())
+                .address(user.getAddress())
+                .phoneNumber(user.getPhoneNumber())
+                .gender(user.getGender())
+                .birthDate(user.getBirthDate().toString())
+                .createAt(user.getCreateAt().toString())
+                .build()).toList();
+
+        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
+        int start = (int) pageRequest.getOffset();
+        int end = Math.min((start + pageRequest.getPageSize()), userInfoResponses.size());
+
+        return new PageImpl<>(userInfoResponses.subList(start, end), pageRequest, userInfoResponses.size());
     }
 }

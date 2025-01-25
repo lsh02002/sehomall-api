@@ -10,7 +10,10 @@ import com.example.sehomallapi.web.dto.users.UserInfoResponse;
 import com.example.sehomallapi.web.dto.users.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -69,5 +72,20 @@ public class UserController {
     @GetMapping("/test2")
     public String test2(){
         return "Jwt 토큰이 상관없는 EntryPoint 테스트입니다.";
+    }
+
+    //관리자 모듈
+
+    @PostMapping("/admin-login")
+    public ResponseEntity<UserResponse> adminLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
+        List<Object> tokenAndResponse = userService.adminLogin(loginRequest);
+        httpServletResponse.setHeader("Token", (String) tokenAndResponse.get(0));
+        return ResponseEntity.ok((UserResponse) tokenAndResponse.get(1));
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/all-users-info")
+    public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable) {
+        return userService.getAllUsersInfo(pageable);
     }
 }

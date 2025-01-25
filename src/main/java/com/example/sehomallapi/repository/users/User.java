@@ -5,6 +5,7 @@ import com.example.sehomallapi.repository.payment.Payment;
 import com.example.sehomallapi.repository.users.userRoles.UserRoles;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -55,6 +56,10 @@ public class User {
     @CreatedDate
     @Column(name = "create_at")
     private LocalDateTime createAt;
+
+    @Column(name = "user_status")
+    @ColumnDefault("'정상'")
+    private String userStatus;
 
     @OneToMany(mappedBy = "user")
     private Collection<UserRoles> userRoles;
