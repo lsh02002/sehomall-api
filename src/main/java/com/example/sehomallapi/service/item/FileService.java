@@ -7,19 +7,17 @@ import com.example.sehomallapi.repository.item.FileRepository;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Files;
 
 @Service
 @RequiredArgsConstructor
 public class FileService {
-    FileRepository fileRepository;
+    private final FileRepository fileRepository;
     private final AmazonS3Client amazonS3Client;
 
     // 파일 디렉터리
@@ -32,7 +30,8 @@ public class FileService {
         if (file.isEmpty()) throw new NotFoundException("File is empty", file.getName());
 
         try {
-            String fileName = file.getOriginalFilename();
+            long time = System.currentTimeMillis();
+            String fileName = time + file.getOriginalFilename();
             String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
@@ -43,7 +42,7 @@ public class FileService {
             return File.builder()
                     .fileName(fileName)
                     .fileSize(file.getSize())
-                    .fileExtension(fileName != null ? getFileExtension(fileName) : null)
+                    .fileExtension(getFileExtension(fileName))
                     .fileUrl(fileUrl)
                     .item(item)
                     .review(null)
@@ -58,7 +57,8 @@ public class FileService {
         if (file.isEmpty()) throw new NotFoundException("File is empty", file.getName());
 
         try {
-            String fileName = file.getOriginalFilename();
+            long time = System.currentTimeMillis();
+            String fileName = time + file.getOriginalFilename();
             String fileUrl = "https://" + bucket + ".s3.ap-northeast-2.amazonaws.com/" + fileName;
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
@@ -69,7 +69,7 @@ public class FileService {
             return File.builder()
                     .fileName(fileName)
                     .fileSize(file.getSize())
-                    .fileExtension(fileName != null ? getFileExtension(fileName) : null)
+                    .fileExtension(getFileExtension(fileName))
                     .fileUrl(fileUrl)
                     .item(null)
                     .review(review)
