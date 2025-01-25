@@ -74,7 +74,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/review/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/review/**").hasAnyRole("USER")
                                 // user controller
-                                .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/test1").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/hist/**", "/user/test1").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
                                 .requestMatchers( "/**").permitAll())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

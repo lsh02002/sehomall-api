@@ -2,6 +2,7 @@ package com.example.sehomallapi.repository.users;
 
 import com.example.sehomallapi.repository.cart.Cart;
 import com.example.sehomallapi.repository.payment.Payment;
+import com.example.sehomallapi.repository.users.userLoginHist.UserLoginHist;
 import com.example.sehomallapi.repository.users.userRoles.UserRoles;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,7 +20,7 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
-@EqualsAndHashCode(of = "userId")
+@EqualsAndHashCode(of = "id")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -66,6 +67,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Payment> payments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    private List<UserLoginHist> userLoginHists = new ArrayList<>();
 
     @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private Cart cart;

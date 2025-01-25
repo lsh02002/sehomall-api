@@ -8,6 +8,7 @@ import com.example.sehomallapi.web.dto.users.LoginRequest;
 import com.example.sehomallapi.web.dto.users.SignupRequest;
 import com.example.sehomallapi.web.dto.users.UserInfoResponse;
 import com.example.sehomallapi.web.dto.users.UserResponse;
+import com.example.sehomallapi.web.dto.users.userLoginHist.UserLoginHistResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -52,6 +53,11 @@ public class UserController {
         return userService.isEmailExisted(email);
     }
 
+    @GetMapping("/hist")
+    public Page<UserLoginHistResponse> getUserLoginHist(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+        return userService.getUserLoginHist(customUserDetails.getId(), pageable);
+    }
+
     @GetMapping(value = "/entrypoint")
     public void entrypointException(@RequestParam(name = "token", required = false) String token) {
         if (token==null) throw new NotAcceptableException("로그인(Jwt 토큰)이 필요합니다.", null);
@@ -87,5 +93,11 @@ public class UserController {
     @GetMapping("/all-users-info")
     public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable) {
         return userService.getAllUsersInfo(pageable);
+    }
+
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
+    @GetMapping("/hist/{userId}")
+    public Page<UserLoginHistResponse> getUserLoginHistByAdmin(@PathVariable Long userId, Pageable pageable) {
+        return userService.getUserLoginHist(userId, pageable);
     }
 }

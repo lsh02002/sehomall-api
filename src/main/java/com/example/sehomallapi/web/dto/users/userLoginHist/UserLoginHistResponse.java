@@ -1,0 +1,16 @@
+package com.example.sehomallapi.web.dto.users.userLoginHist;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class UserLoginHistResponse {
+    private Long histId;
+    private Long userId;
+    private String loginAt;
+}

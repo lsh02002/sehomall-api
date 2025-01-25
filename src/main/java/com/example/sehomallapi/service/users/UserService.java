@@ -6,15 +6,19 @@ import com.example.sehomallapi.repository.cart.CartRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
+import com.example.sehomallapi.repository.users.userLoginHist.UserLoginHist;
+import com.example.sehomallapi.repository.users.userLoginHist.UserLoginHistRepository;
 import com.example.sehomallapi.repository.users.userRoles.Roles;
 import com.example.sehomallapi.repository.users.userRoles.RolesRepository;
 import com.example.sehomallapi.repository.users.userRoles.UserRoles;
 import com.example.sehomallapi.repository.users.userRoles.UserRolesRepository;
+import com.example.sehomallapi.service.cart.CartService;
 import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.CustomBadCredentialsException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.users.*;
+import com.example.sehomallapi.web.dto.users.userLoginHist.UserLoginHistResponse;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -41,6 +45,7 @@ public class UserService {
     private final UserRolesRepository userRolesRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final CartRepository cartRepository;
+    private final UserLoginHistRepository userLoginHistRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -141,6 +146,7 @@ public class UserService {
         return new UserResponse(HttpStatus.OK.value(), user.getNickname() + "님 회원 가입 완료 되었습니다.", signupResponse);
     }
 
+    @Transactional
     public List<Object> login(LoginRequest request) {
         if(request.getEmail()==null||request.getPassword()==null){
             throw new BadRequestException("이메일이나 비밀번호 값이 비어있습니다.","email : "+request.getEmail()+", password : "+request.getPassword());
@@ -160,6 +166,11 @@ public class UserService {
 
         List<String> roles = user.getUserRoles().stream()
                 .map(UserRoles::getRoles).map(Roles::getName).toList();
+
+        userLoginHistRepository.save(UserLoginHist.builder()
+                .user(user)
+                .loginAt(LocalDateTime.now())
+                .build());
 
         SignupResponse signupResponse = SignupResponse.builder()
                 .userId(user.getId())
@@ -188,6 +199,15 @@ public class UserService {
                 .build();
     }
 
+    public Page<UserLoginHistResponse> getUserLoginHist(Long userId, Pageable pageable) {
+        return userLoginHistRepository.findByUserId(userId, pageable)
+                .map(hist->UserLoginHistResponse.builder()
+                        .histId(hist.getId())
+                        .userId(hist.getUser().getId())
+                        .loginAt(hist.getLoginAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                        .build());
+    }
+
     public boolean isNicknameExisted(String nickname){
         return userRepository.existsByNickname(nickname);
     }
@@ -196,6 +216,7 @@ public class UserService {
         return userRepository.existsByEmail(email);
     }
 
+    @Transactional
     public List<Object> adminLogin(LoginRequest request) {
         if(request.getEmail()==null||request.getPassword()==null){
             throw new BadRequestException("이메일이나 비밀번호 값이 비어있습니다.","email : "+request.getEmail()+", password : "+request.getPassword());
@@ -220,6 +241,11 @@ public class UserService {
             throw new BadRequestException("관리자 권한이 없습니다.", request.getEmail());
         }
 
+        userLoginHistRepository.save(UserLoginHist.builder()
+                .user(user)
+                .loginAt(LocalDateTime.now())
+                .build());
+
         SignupResponse signupResponse = SignupResponse.builder()
                 .userId(user.getId())
                 .nickname(user.getNickname())
@@ -233,15 +259,16 @@ public class UserService {
     public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable){
         List<UserInfoResponse> userInfoResponses = userRepository.findAll(pageable)
                 .stream().map(user->UserInfoResponse.builder()
-                .nickname(user.getNickname())
-                .name(user.getName())
-                .email(user.getEmail())
-                .address(user.getAddress())
-                .phoneNumber(user.getPhoneNumber())
-                .gender(user.getGender())
-                .birthDate(user.getBirthDate().toString())
-                .createAt(user.getCreateAt().toString())
-                .build()).toList();
+                        .userId(user.getId())
+                        .nickname(user.getNickname())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .address(user.getAddress())
+                        .phoneNumber(user.getPhoneNumber())
+                        .gender(user.getGender())
+                        .birthDate(user.getBirthDate().toString())
+                        .createAt(user.getCreateAt().toString())
+                        .build()).toList();
 
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
         int start = (int) pageRequest.getOffset();
