@@ -17,9 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,6 +78,7 @@ public class PaymentService {
 
     }
 
+    @Transactional
     public Boolean changePaymentStatus(Long userId, Long paymentId, String status) {
         try {
             Payment payment = paymentRepository.findByIdAndUserId(paymentId, userId)

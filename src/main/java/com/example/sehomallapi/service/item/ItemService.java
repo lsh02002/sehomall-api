@@ -122,7 +122,7 @@ public class ItemService {
         Item item = itemRepository.findByIdAndUserId(id, userId)
                         .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", id));
 
-//        fileService.deleteAllFiles(item);
+        fileService.deleteAllFiles(item);
         itemRepository.deleteById(id);
     }
 
@@ -132,6 +132,12 @@ public class ItemService {
                 .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
 
         return item.getHeartCount();
+    }
+
+    @CachePut(key = "#keyword", value = "item")
+    public Page<ItemResponse> getItemsByKeyword(String keyword, Pageable pageable) {
+        return itemRepository.findByKeyword(keyword, pageable)
+                .map(this::convertToItemResponse);
     }
 
     private ItemResponse convertToItemResponse(Item item) {
@@ -184,9 +190,11 @@ public class ItemService {
         item.setDeliveryFee(itemRequest.getDeliveryFee());
 
         // 기존 이미지 삭제 후 새 이미지 업로드
-//        fileService.deleteAllFiles(item);
+        fileService.deleteAllFiles(item);
         itemRepository.save(item);
         updateFileFromRequest(item, files);
+
+        itemRepository.save(item);
     }
 
     private FileResponse convertToFileResponse(File file) {

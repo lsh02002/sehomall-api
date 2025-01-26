@@ -9,17 +9,14 @@ import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
-import com.example.sehomallapi.web.dto.heart.HeartRequest;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service

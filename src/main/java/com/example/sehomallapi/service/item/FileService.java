@@ -10,6 +10,7 @@ import com.example.sehomallapi.service.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -25,6 +26,7 @@ public class FileService {
     private String bucket;
 
     // 파일 업로드 및 DB 생성
+    @Transactional
     public File createFile(MultipartFile file, Item item) {
         // 이미지 파일이 없을 경을 경우
         if (file.isEmpty()) throw new NotFoundException("File is empty", file.getName());
@@ -52,6 +54,7 @@ public class FileService {
         }
     }
 
+    @Transactional
     public File createReviewFile(MultipartFile file, Review review) {
         // 이미지 파일이 없을 경을 경우
         if (file.isEmpty()) throw new NotFoundException("File is empty", file.getName());
@@ -88,5 +91,11 @@ public class FileService {
     public void deleteFile(Long id) {
         File file = fileRepository.findById(id).orElseThrow(()->new NotFoundException("삭제할 파일을 찾을 수 없습니다.", id));
         fileRepository.delete(file);
+    }
+
+    @Transactional
+    public void deleteAllFiles(Item item) {
+        fileRepository.deleteAll(item.getFiles());
+        item.getFiles().clear();
     }
 }

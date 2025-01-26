@@ -42,6 +42,17 @@ public class ItemController {
         return ResponseEntity.ok(itemService.getAllItemsByCategory(category, pageable));
     }
 
+    @GetMapping("/user")
+    public ResponseEntity<Page<ItemResponse>> getItemByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+        Page<ItemResponse> response = itemService.getAllItemsByUser(findUserByToken.findUser(customUserDetails), pageable);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<Page<ItemResponse>> getItemsByKeyword(@PathVariable String keyword, Pageable pageable) {
+        return ResponseEntity.ok(itemService.getItemsByKeyword(keyword, pageable));
+    }
+
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<ItemResponse> createItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ItemRequest itemRequest, @RequestPart(required = false) List<MultipartFile> files) {
@@ -53,12 +64,6 @@ public class ItemController {
     @PutMapping("/{id}")
     public ResponseEntity<ItemResponse> updateItem(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long id, @RequestPart ItemRequest itemRequest, @RequestPart(required = false) List<MultipartFile> files) {
         ItemResponse response = itemService.updateItem(id, itemRequest, files, findUserByToken.findUser(customUserDetails));
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("/user")
-    public ResponseEntity<Page<ItemResponse>> getItemByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
-        Page<ItemResponse> response = itemService.getAllItemsByUser(findUserByToken.findUser(customUserDetails), pageable);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
