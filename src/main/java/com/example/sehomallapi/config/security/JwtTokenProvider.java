@@ -110,7 +110,7 @@ public class JwtTokenProvider {
     public void setRefreshTokenCookies(HttpServletResponse response, String refreshToken){
         Cookie myCookie = new Cookie("refreshToken", refreshToken);
         myCookie.setMaxAge(60 * 60 * 24 * 14);
-//        myCookie.setHttpOnly(true);
+        myCookie.setHttpOnly(true);
         myCookie.setPath("/");
         response.addCookie(myCookie);
     }
