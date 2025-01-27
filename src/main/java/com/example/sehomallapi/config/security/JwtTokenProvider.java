@@ -102,7 +102,7 @@ public class JwtTokenProvider {
     public void setAccessTokenCookies(HttpServletResponse response, String accessToken){
         Cookie myCookie = new Cookie("accessToken", accessToken);
         myCookie.setMaxAge(30 * 60);
-//        myCookie.setHttpOnly(true);
+        myCookie.setHttpOnly(true);
         myCookie.setPath("/");
         response.addCookie(myCookie);
     }
