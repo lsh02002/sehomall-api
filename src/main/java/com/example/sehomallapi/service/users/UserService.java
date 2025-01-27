@@ -1,8 +1,11 @@
 package com.example.sehomallapi.service.users;
 
+import com.example.sehomallapi.config.redis.RedisUtil;
 import com.example.sehomallapi.config.security.JwtTokenProvider;
 import com.example.sehomallapi.repository.cart.Cart;
 import com.example.sehomallapi.repository.cart.CartRepository;
+import com.example.sehomallapi.repository.users.refreshToken.RefreshToken;
+import com.example.sehomallapi.repository.users.refreshToken.RefreshTokenRepository;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
@@ -12,14 +15,12 @@ import com.example.sehomallapi.repository.users.userRoles.Roles;
 import com.example.sehomallapi.repository.users.userRoles.RolesRepository;
 import com.example.sehomallapi.repository.users.userRoles.UserRoles;
 import com.example.sehomallapi.repository.users.userRoles.UserRolesRepository;
-import com.example.sehomallapi.service.cart.CartService;
-import com.example.sehomallapi.service.exceptions.BadRequestException;
-import com.example.sehomallapi.service.exceptions.ConflictException;
-import com.example.sehomallapi.service.exceptions.CustomBadCredentialsException;
-import com.example.sehomallapi.service.exceptions.NotFoundException;
+import com.example.sehomallapi.service.exceptions.*;
 import com.example.sehomallapi.web.dto.users.*;
 import com.example.sehomallapi.web.dto.users.userLoginHist.UserLoginHistResponse;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -35,7 +36,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +43,9 @@ public class UserService {
     private final UserRepository userRepository;
     private final RolesRepository rolesRepository;
     private final UserRolesRepository userRolesRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisUtil redisUtil;
     private final CartRepository cartRepository;
     private final UserLoginHistRepository userLoginHistRepository;
 
@@ -164,6 +166,10 @@ public class UserService {
             throw new CustomBadCredentialsException("비밀번호가 일치하지 않습니다.", request.getPassword());
         }
 
+        if(user.getUserStatus().equals("탈퇴")){
+            throw new AccessDeniedException("탈퇴한 계정입니다.",request.getEmail());
+        }
+
         List<String> roles = user.getUserRoles().stream()
                 .map(UserRoles::getRoles).map(Roles::getName).toList();
 
@@ -177,14 +183,25 @@ public class UserService {
                 .nickname(user.getNickname())
                 .build();
 
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+
+        RefreshToken newToken = RefreshToken.builder()
+                .authId(user.getId().toString())
+                .refreshToken(newRefreshToken)
+                .email(user.getEmail())
+                .build();
+
+        refreshTokenRepository.save(newToken);
+
         UserResponse authResponse = new UserResponse(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
 
-        return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponse);
+        return Arrays.asList(jwtTokenProvider.createAccessToken(user.getEmail()), newRefreshToken, authResponse);
     }
 
     public UserInfoResponse getUserInfo(CustomUserDetails customUserDetails) {
         String birthDate = customUserDetails.getBirthDate().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
         String createAt = customUserDetails.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+        String deleteAt = customUserDetails.getDeleteAt() != null ? customUserDetails.getDeleteAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일")) : null;
 
         return UserInfoResponse.builder()
                 .userId(customUserDetails.getId())
@@ -195,8 +212,46 @@ public class UserService {
                 .phoneNumber(customUserDetails.getPhoneNumber())
                 .gender(customUserDetails.getGender())
                 .birthDate(birthDate)
+                .userStatus(customUserDetails.getUserStatus())
                 .createAt(createAt)
+                .deleteAt(deleteAt)
                 .build();
+    }
+
+    @Transactional
+    public UserResponse logout(String email, HttpServletRequest request, HttpServletResponse response){
+        String accessToken = jwtTokenProvider.getAccessTokenCookie(request);
+
+        if(email == null) {
+            throw new BadRequestException("유저 정보가 비어있습니다.", null);
+        }
+
+        RefreshToken deletedToken = refreshTokenRepository.findByEmail(email);
+        if(deletedToken != null) {
+            refreshTokenRepository.delete(deletedToken);
+        }
+
+        if(jwtTokenProvider.validateToken(accessToken)) {
+            redisUtil.setBlackList(accessToken, "accessToken", 30);
+        }
+
+        jwtTokenProvider.deleteAccessAndRefreshTokenCookies(response);
+
+        return new UserResponse(HttpStatus.OK.value(), "로그아웃에 성공 하였습니다.", null);
+    }
+
+    @Transactional
+    public UserResponse withdrawal(String email) {
+        User user = userRepository.findByEmail(email).orElseThrow(
+                ()->new NotFoundException("계정을 찾을 수 없습니다. 다시 로그인 해주세요.", email));
+
+        if(user.getUserStatus().equals("탈퇴")){
+            throw new BadRequestException("이미 탈퇴처리된 회원 입니다.", email);
+        }
+        user.setUserStatus("탈퇴");
+        user.setDeleteAt(LocalDateTime.now());
+
+        return new UserResponse(200, "회원탈퇴 완료 되었습니다.", user.getName());
     }
 
     public Page<UserLoginHistResponse> getUserLoginHist(Long userId, Pageable pageable) {
@@ -234,6 +289,10 @@ public class UserService {
             throw new CustomBadCredentialsException("비밀번호가 일치하지 않습니다.", request.getPassword());
         }
 
+        if(user.getUserStatus().equals("탈퇴")){
+            throw new AccessDeniedException("탈퇴한 계정입니다.",request.getEmail());
+        }
+
         List<String> roles = user.getUserRoles().stream()
                 .map(UserRoles::getRoles).map(Roles::getName).toList();
 
@@ -251,9 +310,19 @@ public class UserService {
                 .nickname(user.getNickname())
                 .build();
 
+        String newRefreshToken = jwtTokenProvider.createRefreshToken(user.getEmail());
+
+        RefreshToken newToken = RefreshToken.builder()
+                .authId(user.getId().toString())
+                .refreshToken(newRefreshToken)
+                .email(user.getEmail())
+                .build();
+
+        refreshTokenRepository.save(newToken);
+
         UserResponse authResponse = new UserResponse(HttpStatus.OK.value(), "로그인에 성공 하였습니다.", signupResponse);
 
-        return Arrays.asList(jwtTokenProvider.createToken(user.getEmail()), authResponse);
+        return Arrays.asList(jwtTokenProvider.createAccessToken(user.getEmail()), newRefreshToken, authResponse);
     }
 
     public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable){
@@ -267,7 +336,9 @@ public class UserService {
                         .phoneNumber(user.getPhoneNumber())
                         .gender(user.getGender())
                         .birthDate(user.getBirthDate().toString())
+                        .userStatus(user.getUserStatus())
                         .createAt(user.getCreateAt().toString())
+                        .deleteAt(user.getDeleteAt().toString())
                         .build()).toList();
 
         PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());

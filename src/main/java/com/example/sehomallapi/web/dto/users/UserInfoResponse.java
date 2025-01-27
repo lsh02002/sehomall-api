@@ -16,5 +16,7 @@ public class UserInfoResponse {
     private String address;
     private String gender;
     private String birthDate;
+    private String userStatus;
     private String createAt;
+    private String deleteAt;
 }

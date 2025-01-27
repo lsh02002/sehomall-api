@@ -41,6 +41,8 @@ public class CustomUserDetails implements UserDetails {
     private String address;
     @Getter
     private String gender;
+    @Getter
+    private String userStatus;
 
     @Getter
     @JsonProperty("birthDate")
@@ -55,6 +57,13 @@ public class CustomUserDetails implements UserDetails {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime createAt;
+
+    @Getter
+    @JsonProperty("deleteAt")
+    @JsonSerialize(using = LocalDateTimeSerializer.class) // 직렬화 시 필요
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class) // 역직렬화 시 필요
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
+    private LocalDateTime deleteAt;
 
     private List<String> authorities;
 

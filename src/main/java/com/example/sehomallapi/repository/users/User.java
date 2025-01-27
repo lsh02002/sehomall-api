@@ -54,13 +54,16 @@ public class User {
     @Column(name = "birth_date")
     private LocalDateTime birthDate;
 
+    @Column(name = "user_status")
+    @ColumnDefault("'정상'")
+    private String userStatus;
+
     @CreatedDate
     @Column(name = "create_at")
     private LocalDateTime createAt;
 
-    @Column(name = "user_status")
-    @ColumnDefault("'정상'")
-    private String userStatus;
+    @Column(name = "deleted_at")
+    private LocalDateTime deleteAt;
 
     @OneToMany(mappedBy = "user")
     private Collection<UserRoles> userRoles;

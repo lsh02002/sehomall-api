@@ -75,6 +75,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/review/**").hasAnyRole("USER")
                                 // user controller
                                 .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/hist/**", "/user/test1").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/user/logout/**", "/user/withdrawal").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
                                 .requestMatchers( "/**").permitAll())
                 .addFilterBefore(new JwtFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
@@ -90,9 +91,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("*"));
-        corsConfiguration.addExposedHeader("Token");
-        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.setAllowedOriginPatterns(List.of("*"));
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.setAllowedHeaders(List.of("*"));
+        corsConfiguration.setExposedHeaders(List.of("Set-Cookie", "accessToken", "refreshToken"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "PUT", "POST","PATCH","DELETE","OPTIONS"));
         corsConfiguration.setMaxAge(1000L*60*60);
 

@@ -1,5 +1,6 @@
 package com.example.sehomallapi.web.controller.users;
 
+import com.example.sehomallapi.config.security.JwtTokenProvider;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.AccessDeniedException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
@@ -9,6 +10,7 @@ import com.example.sehomallapi.web.dto.users.SignupRequest;
 import com.example.sehomallapi.web.dto.users.UserInfoResponse;
 import com.example.sehomallapi.web.dto.users.UserResponse;
 import com.example.sehomallapi.web.dto.users.userLoginHist.UserLoginHistResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -24,6 +26,7 @@ import java.util.List;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
+    private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
     @PostMapping("/sign-up")
@@ -32,10 +35,22 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
-        List<Object> tokenAndResponse = userService.login(loginRequest);
-        httpServletResponse.setHeader("Token", (String) tokenAndResponse.get(0));
-        return ResponseEntity.ok((UserResponse) tokenAndResponse.get(1));
+    public UserResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
+        List<Object> accessTokenAndRefreshTokenAndResponse = userService.login(loginRequest);
+        jwtTokenProvider.setAccessTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(0));
+        jwtTokenProvider.setRefreshTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(1));
+
+        return (UserResponse) accessTokenAndRefreshTokenAndResponse.get(2);
+    }
+
+    @DeleteMapping("/logout")
+    public UserResponse logout(@AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest request, HttpServletResponse response){
+        return userService.logout(customUserDetails.getEmail(), request, response);
+    }
+
+    @DeleteMapping("/withdrawal")
+    public UserResponse withdrawal(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return userService.withdrawal(customUserDetails.getEmail());
     }
 
     @GetMapping("/info")
@@ -83,10 +98,12 @@ public class UserController {
     //관리자 모듈
 
     @PostMapping("/admin-login")
-    public ResponseEntity<UserResponse> adminLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
-        List<Object> tokenAndResponse = userService.adminLogin(loginRequest);
-        httpServletResponse.setHeader("Token", (String) tokenAndResponse.get(0));
-        return ResponseEntity.ok((UserResponse) tokenAndResponse.get(1));
+    public UserResponse adminLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
+        List<Object> accessTokenAndRefreshTokenAndResponse = userService.adminLogin(loginRequest);
+        jwtTokenProvider.setAccessTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(0));
+        jwtTokenProvider.setRefreshTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(1));
+
+        return (UserResponse) accessTokenAndRefreshTokenAndResponse.get(2);
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
