@@ -73,6 +73,11 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/review/user/**","/review/unreviewed-items/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.PUT, "/review/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/review/**").hasAnyRole("USER")
+                                // notice controller
+                                .requestMatchers(HttpMethod.POST, "/api/notices/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/api/notices/user/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.PUT, "/api/notices/**").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.DELETE, "/api/notices/**").hasAnyRole("USER")
                                 // user controller
                                 .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/hist/**", "/user/test1").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/user/logout/**", "/user/withdrawal").hasAnyRole("USER")
