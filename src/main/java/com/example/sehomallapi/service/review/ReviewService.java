@@ -89,7 +89,7 @@ public class ReviewService {
            }
 
            Item item = itemRepository.findById(reviewRequest.getItemId())
-                   .orElseThrow(() -> new NotFoundException("입력하신 아이템 아이디로 회원을 찾을 수 없습니다.", reviewRequest.getItemId()));
+                   .orElseThrow(() -> new NotFoundException("입력하신 상품을 찾을 수 없습니다.", reviewRequest.getItemId()));
 
            if(reviewedItemRepository.existsByItemIdAndUserId(item.getId(), userId)) {
                throw new BadRequestException("리뷰는 구입하신 상품 하나에 한번만 올릴수 있습니다.", null);
