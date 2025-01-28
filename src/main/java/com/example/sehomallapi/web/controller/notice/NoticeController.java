@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,16 +33,19 @@ public class NoticeController {
         return ResponseEntity.ok(noticeService.getNoticesByUserId(userDetails.getId(), pageable));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
     public ResponseEntity<NoticeResponse> createNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody NoticeRequest noticeRequest) {
         return ResponseEntity.ok(noticeService.createNotice(customUserDetails.getId(), noticeRequest));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/{noticeId}")
     public ResponseEntity<Boolean> updateNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long noticeId, @RequestBody NoticeRequest noticeRequest) {
         return ResponseEntity.ok(noticeService.updateNotice(customUserDetails.getId(), noticeId, noticeRequest));
     }
 
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping("/{noticeId}")
     public ResponseEntity<Boolean> deleteNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long noticeId) {
         return ResponseEntity.ok(noticeService.deleteNotice(customUserDetails.getId(), noticeId));
