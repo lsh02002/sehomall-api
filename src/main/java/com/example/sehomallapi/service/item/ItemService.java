@@ -14,6 +14,7 @@ import com.example.sehomallapi.web.dto.item.ItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -134,7 +135,6 @@ public class ItemService {
         return item.getHeartCount();
     }
 
-    @CachePut(key = "#keyword", value = "item")
     public Page<ItemResponse> getItemsByKeyword(String keyword, Pageable pageable) {
         return itemRepository.findByKeyword(keyword, pageable)
                 .map(this::convertToItemResponse);
