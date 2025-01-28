@@ -55,7 +55,6 @@ public class User {
     private LocalDateTime birthDate;
 
     @Column(name = "user_status")
-    @ColumnDefault("'정상'")
     private String userStatus;
 
     @CreatedDate

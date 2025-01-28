@@ -127,6 +127,7 @@ public class UserService {
                 .phoneNumber(signupRequest.getPhoneNumber())
                 .address(signupRequest.getAddress())
                 .gender(signupRequest.getGender())
+                .userStatus("정상")
                 .birthDate(birthDate)
                 .build();
 
