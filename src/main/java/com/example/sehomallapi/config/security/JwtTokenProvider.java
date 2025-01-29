@@ -104,7 +104,6 @@ public class JwtTokenProvider {
         ResponseCookie myCookie = ResponseCookie.from("accessToken", accessToken)
                 .path("/")
                 .maxAge(30 * 60)
-                .httpOnly(true)
                 .secure(true)
                 .build();
 
@@ -115,7 +114,6 @@ public class JwtTokenProvider {
         ResponseCookie myCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .path("/")
                 .maxAge(60 * 60 * 24 * 14)
-                .httpOnly(true)
                 .secure(true)
                 .build();
 
@@ -126,14 +124,12 @@ public class JwtTokenProvider {
         ResponseCookie myCookie1 = ResponseCookie.from("accessToken", null)
                 .path("/")
                 .maxAge(0)
-                .httpOnly(true)
                 .secure(true)
                 .build();
 
         ResponseCookie myCookie2 = ResponseCookie.from("refreshToken", null)
                 .path("/")
                 .maxAge(0)
-                .httpOnly(true)
                 .secure(true)
                 .build();
 
