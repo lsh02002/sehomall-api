@@ -105,7 +105,6 @@ public class JwtTokenProvider {
                 .path("/")
                 .maxAge(30 * 60)
                 .httpOnly(true)
-                .secure(true)
                 .build();
 
         response.addHeader("Set-Cookie", myCookie.toString());
@@ -116,7 +115,6 @@ public class JwtTokenProvider {
                 .path("/")
                 .maxAge(60 * 60 * 24 * 14)
                 .httpOnly(true)
-                .secure(true)
                 .build();
 
         response.addHeader("Set-Cookie", myCookie.toString());
@@ -127,14 +125,12 @@ public class JwtTokenProvider {
                 .path("/")
                 .maxAge(0)
                 .httpOnly(true)
-                .secure(true)
                 .build();
 
         ResponseCookie myCookie2 = ResponseCookie.from("refreshToken", null)
                 .path("/")
                 .maxAge(0)
                 .httpOnly(true)
-                .secure(true)
                 .build();
 
         response.addHeader("Set-Cookie", myCookie1.toString());
