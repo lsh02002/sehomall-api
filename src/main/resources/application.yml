@@ -30,14 +30,6 @@ spring:
 
 server:
   port: 8090
-#  ssl:
-#    enabled: true
-#    key-alias: ${KEY_ALIAS}
-#    key-store: ${KEY_STORE}
-#    key-store-password: ${KEY_STORE_PASSWORD}
-#    key-password: ${KEY_PASSWORD}
-#    trust-store: ${TRUST_STORE}
-#    trust-store-password: ${TRUST_STORE_PASSWORD}
   error:
     include-exception: true     # ??? exception? ??? ???? ??
     path: '/error'               # ??? ??? Handler? ??

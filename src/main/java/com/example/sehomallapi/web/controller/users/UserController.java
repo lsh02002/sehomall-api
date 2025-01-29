@@ -26,7 +26,6 @@ import java.util.List;
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
-    private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
 
     @PostMapping("/sign-up")
@@ -37,8 +36,8 @@ public class UserController {
     @PostMapping("/login")
     public UserResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
         List<Object> accessTokenAndRefreshTokenAndResponse = userService.login(loginRequest);
-        jwtTokenProvider.setAccessTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(0));
-        jwtTokenProvider.setRefreshTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(1));
+        httpServletResponse.addHeader("accessToken", accessTokenAndRefreshTokenAndResponse.get(0).toString());
+        httpServletResponse.addHeader("refreshToken", accessTokenAndRefreshTokenAndResponse.get(1).toString());
 
         return (UserResponse) accessTokenAndRefreshTokenAndResponse.get(2);
     }
@@ -100,8 +99,8 @@ public class UserController {
     @PostMapping("/admin-login")
     public UserResponse adminLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
         List<Object> accessTokenAndRefreshTokenAndResponse = userService.adminLogin(loginRequest);
-        jwtTokenProvider.setAccessTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(0));
-        jwtTokenProvider.setRefreshTokenCookies(httpServletResponse, (String) accessTokenAndRefreshTokenAndResponse.get(1));
+        httpServletResponse.addHeader("accessToken", accessTokenAndRefreshTokenAndResponse.get(0).toString());
+        httpServletResponse.addHeader("refreshToken", accessTokenAndRefreshTokenAndResponse.get(1).toString());
 
         return (UserResponse) accessTokenAndRefreshTokenAndResponse.get(2);
     }

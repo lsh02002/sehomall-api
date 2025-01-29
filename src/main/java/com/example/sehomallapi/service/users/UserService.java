@@ -221,7 +221,7 @@ public class UserService {
 
     @Transactional
     public UserResponse logout(String email, HttpServletRequest request, HttpServletResponse response){
-        String accessToken = jwtTokenProvider.getAccessTokenCookie(request);
+        String accessToken = request.getHeader("accessToken");
 
         if(email == null) {
             throw new BadRequestException("유저 정보가 비어있습니다.", null);
@@ -235,8 +235,6 @@ public class UserService {
         if(jwtTokenProvider.validateToken(accessToken)) {
             redisUtil.setBlackList(accessToken, "accessToken", 30);
         }
-
-        jwtTokenProvider.deleteAccessAndRefreshTokenCookies(response);
 
         return new UserResponse(HttpStatus.OK.value(), "로그아웃에 성공 하였습니다.", null);
     }
