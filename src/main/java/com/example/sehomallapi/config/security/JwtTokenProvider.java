@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -100,31 +101,36 @@ public class JwtTokenProvider {
     }
 
     public void setAccessTokenCookies(HttpServletResponse response, String accessToken){
-        Cookie myCookie = new Cookie("accessToken", accessToken);
-        myCookie.setMaxAge(30 * 60);
-        myCookie.setHttpOnly(true);
-        myCookie.setPath("/");
-        response.addCookie(myCookie);
+        ResponseCookie myCookie = ResponseCookie.from("accessToken", accessToken)
+                .path("/")
+                .maxAge(30 * 60)
+                .build();
+
+        response.addHeader("Set-Cookie", myCookie.toString());
     }
 
     public void setRefreshTokenCookies(HttpServletResponse response, String refreshToken){
-        Cookie myCookie = new Cookie("refreshToken", refreshToken);
-        myCookie.setMaxAge(60 * 60 * 24 * 14);
-        myCookie.setHttpOnly(true);
-        myCookie.setPath("/");
-        response.addCookie(myCookie);
+        ResponseCookie myCookie = ResponseCookie.from("refreshToken", refreshToken)
+                .path("/")
+                .maxAge(60 * 60 * 24 * 14)
+                .build();
+
+        response.addHeader("Set-Cookie", myCookie.toString());
     }
 
     public void deleteAccessAndRefreshTokenCookies(HttpServletResponse response){
-        Cookie myCookie1 = new Cookie("accessToken", null);
-        myCookie1.setMaxAge(0); // 쿠키의 expiration 타임을 0으로 하여 없앤다.
-        myCookie1.setPath("/"); // 모든 경로에서 삭제 됬음을 알린다.
-        response.addCookie(myCookie1);
+        ResponseCookie myCookie1 = ResponseCookie.from("accessToken", null)
+                .path("/")
+                .maxAge(0)
+                .build();
 
-        Cookie myCookie2 = new Cookie("refreshToken", null);
-        myCookie2.setMaxAge(0); // 쿠키의 expiration 타임을 0으로 하여 없앤다.
-        myCookie2.setPath("/"); // 모든 경로에서 삭제 됬음을 알린다.
-        response.addCookie(myCookie2);
+        ResponseCookie myCookie2 = ResponseCookie.from("refreshToken", null)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        response.addHeader("Set-Cookie", myCookie1.toString());
+        response.addHeader("Set-Cookie", myCookie2.toString());
     }
 
     public String getAccessTokenCookie(HttpServletRequest request) {
