@@ -1,6 +1,5 @@
 package com.example.sehomallapi.web.controller.users;
 
-import com.example.sehomallapi.config.security.JwtTokenProvider;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.AccessDeniedException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
@@ -34,8 +33,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
-        List<Object> accessTokenAndRefreshTokenAndResponse = userService.login(loginRequest);
+    public UserResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+        List<Object> accessTokenAndRefreshTokenAndResponse = userService.login(loginRequest, httpServletRequest);
         httpServletResponse.addHeader("accessToken", accessTokenAndRefreshTokenAndResponse.get(0).toString());
         httpServletResponse.addHeader("refreshToken", accessTokenAndRefreshTokenAndResponse.get(1).toString());
 
@@ -97,8 +96,8 @@ public class UserController {
     //관리자 모듈
 
     @PostMapping("/admin-login")
-    public UserResponse adminLogin(@RequestBody LoginRequest loginRequest, HttpServletResponse httpServletResponse){
-        List<Object> accessTokenAndRefreshTokenAndResponse = userService.adminLogin(loginRequest);
+    public UserResponse adminLogin(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+        List<Object> accessTokenAndRefreshTokenAndResponse = userService.adminLogin(loginRequest, httpServletRequest);
         httpServletResponse.addHeader("accessToken", accessTokenAndRefreshTokenAndResponse.get(0).toString());
         httpServletResponse.addHeader("refreshToken", accessTokenAndRefreshTokenAndResponse.get(1).toString());
 

@@ -1,15 +1,11 @@
 package com.example.sehomallapi.repository.users.userLoginHist;
 
-import com.example.sehomallapi.repository.payment.PaymentItem;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "user_login_hists")
@@ -27,6 +23,12 @@ public class UserLoginHist {
 
     @Column(name = "login_at")
     private LocalDateTime loginAt;
+
+    @Column(name = "client_ip")
+    private String clientIp;
+
+    @Column(name = "user_agent")
+    private String userAgent;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

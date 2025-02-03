@@ -150,7 +150,7 @@ public class UserService {
     }
 
     @Transactional
-    public List<Object> login(LoginRequest request) {
+    public List<Object> login(LoginRequest request, HttpServletRequest httpServletRequest) {
         if(request.getEmail()==null||request.getPassword()==null){
             throw new BadRequestException("이메일이나 비밀번호 값이 비어있습니다.","email : "+request.getEmail()+", password : "+request.getPassword());
         }
@@ -176,6 +176,8 @@ public class UserService {
 
         userLoginHistRepository.save(UserLoginHist.builder()
                 .user(user)
+                .clientIp(getClientIP(httpServletRequest))
+                .userAgent(getUserAgent(httpServletRequest))
                 .loginAt(LocalDateTime.now())
                 .build());
 
@@ -271,7 +273,7 @@ public class UserService {
     }
 
     @Transactional
-    public List<Object> adminLogin(LoginRequest request) {
+    public List<Object> adminLogin(LoginRequest request, HttpServletRequest httpServletRequest) {
         if(request.getEmail()==null||request.getPassword()==null){
             throw new BadRequestException("이메일이나 비밀번호 값이 비어있습니다.","email : "+request.getEmail()+", password : "+request.getPassword());
         }
@@ -301,6 +303,8 @@ public class UserService {
 
         userLoginHistRepository.save(UserLoginHist.builder()
                 .user(user)
+                .clientIp(getClientIP(httpServletRequest))
+                .userAgent(getUserAgent(httpServletRequest))
                 .loginAt(LocalDateTime.now())
                 .build());
 
@@ -345,5 +349,31 @@ public class UserService {
         int end = Math.min((start + pageRequest.getPageSize()), userInfoResponses.size());
 
         return new PageImpl<>(userInfoResponses.subList(start, end), pageRequest, userInfoResponses.size());
+    }
+
+    private static String getClientIP(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+
+        if (ip == null) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null) {
+            ip = request.getRemoteAddr();
+        }
+
+        return ip;
+    }
+
+    private static String getUserAgent(HttpServletRequest request) {
+        return request.getHeader("User-Agent");
     }
 }
