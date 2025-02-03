@@ -86,6 +86,17 @@ public class PaymentService {
             payment.setOrderStatus(OrderStatus.valueOf(status));
             paymentRepository.save(payment);
 
+            if(payment.getOrderStatus().equals(OrderStatus.CANCELED)) {
+                List<PaymentItem> paymentItems = paymentItemRepository.findByPaymentId(paymentId);
+
+                for(PaymentItem paymentItem : paymentItems) {
+                    Item item = paymentItem.getItem();
+
+                    item.setCount(item.getCount() + paymentItem.getCount());
+                    itemRepository.save(item);
+                }
+            }
+
             return true;
         } catch (NotFoundException e) {
             return false;
@@ -108,6 +119,9 @@ public class PaymentService {
     private PaymentItem convertToPaymentItemEntity(PaymentItemRequest itemRequest, Payment payment) {
         Item item = itemRepository.findById(itemRequest.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not found", itemRequest.getItemId()));
+
+        item.setCount(item.getCount() - itemRequest.getCount());
+        itemRepository.save(item);
 
         return PaymentItem.builder()
                 .item(item)
