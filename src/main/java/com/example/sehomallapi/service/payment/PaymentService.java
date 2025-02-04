@@ -6,6 +6,7 @@ import com.example.sehomallapi.repository.payment.*;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.BadRequestException;
+import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
@@ -87,12 +88,12 @@ public class PaymentService {
             paymentRepository.save(payment);
 
             if(payment.getOrderStatus().equals(OrderStatus.CANCELED)) {
-                List<PaymentItem> paymentItems = paymentItemRepository.findByPaymentId(paymentId);
+                List<PaymentItem> paymentItems = payment.getPaymentItems();
 
                 for(PaymentItem paymentItem : paymentItems) {
                     Item item = paymentItem.getItem();
 
-                    item.setCount(item.getCount() + paymentItem.getCount());
+                    item.setQuantity(item.getQuantity() + paymentItem.getCount());
                     itemRepository.save(item);
                 }
             }
@@ -120,7 +121,11 @@ public class PaymentService {
         Item item = itemRepository.findById(itemRequest.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not found", itemRequest.getItemId()));
 
-        item.setCount(item.getCount() - itemRequest.getCount());
+        if(itemRequest.getCount() > item.getQuantity()){
+            throw new NotAcceptableException("상품 재고는 " + item.getQuantity() + "개입니다.",item.getQuantity());
+        }
+
+        item.setQuantity(item.getQuantity() - itemRequest.getCount());
         itemRepository.save(item);
 
         return PaymentItem.builder()
@@ -153,7 +158,7 @@ public class PaymentService {
         Item item = paymentItem.getItem();
         ItemResponse itemResponse = ItemResponse.builder()
                 .id(item.getId())
-                .count(item.getCount())
+                .quantity(item.getQuantity())
                 .price(item.getPrice())
                 .size(item.getSize())
                 .careGuide(item.getCareGuide())

@@ -77,7 +77,7 @@ public class ItemService {
             throw new BadRequestException("상품 가격을 입력하세요", null);
         } else if(itemRequest.getSize().trim().isEmpty()){
             throw new BadRequestException("상품 크기를 입력하세요", null);
-        } else if(itemRequest.getCount() == 0) {
+        } else if(itemRequest.getQuantity() == 0) {
             throw new BadRequestException("상품 제고량을 입력하세요", null);
         } else if(itemRequest.getDeliveryFee() == 0){
             throw new BadRequestException("배송비를 입력하세요", null);
@@ -145,7 +145,7 @@ public class ItemService {
 
         return ItemResponse.builder()
                 .id(item.getId())
-                .count(item.getCount())
+                .quantity(item.getQuantity())
                 .price(item.getPrice())
                 .size(item.getSize())
                 .careGuide(item.getCareGuide())
@@ -164,7 +164,7 @@ public class ItemService {
 
     private Item convertToItemEntity(ItemRequest itemRequest) {
         return Item.builder()
-                .count(itemRequest.getCount())
+                .quantity(itemRequest.getQuantity())
                 .price(itemRequest.getPrice())
                 .size(itemRequest.getSize())
                 .careGuide(itemRequest.getCareGuide())
@@ -180,7 +180,7 @@ public class ItemService {
     }
 
     private void updateItemFromRequest(Item item, ItemRequest itemRequest, List<MultipartFile> files) {
-        item.setCount(itemRequest.getCount());
+        item.setQuantity(itemRequest.getQuantity());
         item.setPrice(itemRequest.getPrice());
         item.setSize(itemRequest.getSize());
         item.setCareGuide(itemRequest.getCareGuide());

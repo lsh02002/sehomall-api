@@ -39,12 +39,12 @@ public class CartService {
         Boolean itemChecked = cartItemRequest.getChecked();
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
-        Integer itemCount = item.getCount();
+        Integer itemQuantity = item.getQuantity();
 
         CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
 
-        if(userItemCount > itemCount){
-            throw new NotAcceptableException("물건 최대 개수는 " + itemCount + " 입니다.",itemCount.toString());
+        if(userItemCount > itemQuantity) {
+            throw new NotAcceptableException("상품 재고는 " + itemQuantity + "개입니다.",itemQuantity.toString());
         }
         if(cartItem == null) {
             CartItem isNullCartItem = CartItem.builder().item(item).cart(cart).count(userItemCount).build();

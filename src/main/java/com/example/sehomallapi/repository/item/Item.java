@@ -28,8 +28,8 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private int count;
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
 
     @Column(nullable = false)
     private int price;
