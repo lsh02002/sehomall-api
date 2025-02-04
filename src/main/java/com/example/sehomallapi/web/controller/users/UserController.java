@@ -33,42 +33,42 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public UserResponse login(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         List<Object> accessTokenAndRefreshTokenAndResponse = userService.login(loginRequest, httpServletRequest);
         httpServletResponse.addHeader("accessToken", accessTokenAndRefreshTokenAndResponse.get(0).toString());
         httpServletResponse.addHeader("refreshToken", accessTokenAndRefreshTokenAndResponse.get(1).toString());
 
-        return (UserResponse) accessTokenAndRefreshTokenAndResponse.get(2);
+        return ResponseEntity.ok((UserResponse) accessTokenAndRefreshTokenAndResponse.get(2));
     }
 
     @DeleteMapping("/logout")
-    public UserResponse logout(@AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest request, HttpServletResponse response){
-        return userService.logout(customUserDetails.getEmail(), request, response);
+    public ResponseEntity<UserResponse> logout(@AuthenticationPrincipal CustomUserDetails customUserDetails, HttpServletRequest request, HttpServletResponse response){
+        return ResponseEntity.ok(userService.logout(customUserDetails.getEmail(), request, response));
     }
 
     @DeleteMapping("/withdrawal")
-    public UserResponse withdrawal(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        return userService.withdrawal(customUserDetails.getEmail());
+    public ResponseEntity<UserResponse> withdrawal(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return ResponseEntity.ok(userService.withdrawal(customUserDetails.getEmail()));
     }
 
     @GetMapping("/info")
-    public UserInfoResponse getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        return userService.getUserInfo(customUserDetails);
+    public ResponseEntity<UserInfoResponse> getUserInfo(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        return ResponseEntity.ok(userService.getUserInfo(customUserDetails));
     }
 
     @GetMapping("/is-nickname-existed/{nickname}")
-    public boolean isNicknameExisted(@PathVariable(name = "nickname") String nickname){
-        return userService.isNicknameExisted(nickname);
+    public ResponseEntity<Boolean> isNicknameExisted(@PathVariable(name = "nickname") String nickname){
+        return ResponseEntity.ok(userService.isNicknameExisted(nickname));
     }
 
     @GetMapping("/is-email-existed/{email}")
-    public boolean isEmailExisted(@PathVariable(name = "email") String email){
-        return userService.isEmailExisted(email);
+    public ResponseEntity<Boolean> isEmailExisted(@PathVariable(name = "email") String email){
+        return ResponseEntity.ok(userService.isEmailExisted(email));
     }
 
     @GetMapping("/hist")
-    public Page<UserLoginHistResponse> getUserLoginHist(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
-        return userService.getUserLoginHist(customUserDetails.getId(), pageable);
+    public ResponseEntity<Page<UserLoginHistResponse>> getUserLoginHist(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+        return ResponseEntity.ok(userService.getUserLoginHist(customUserDetails.getId(), pageable));
     }
 
     @GetMapping(value = "/entrypoint")
@@ -84,35 +84,35 @@ public class UserController {
     }
 
     @GetMapping("/test1")
-    public Object test1(@AuthenticationPrincipal CustomUserDetails customUserDetails){
-        return customUserDetails.toString();
+    public ResponseEntity<Object> test1(@AuthenticationPrincipal CustomUserDetails customUserDetails){
+        return ResponseEntity.ok(customUserDetails.toString());
     }
 
     @GetMapping("/test2")
-    public String test2(){
-        return "Jwt 토큰이 상관없는 EntryPoint 테스트입니다.";
+    public ResponseEntity<String> test2(){
+        return ResponseEntity.ok("Jwt 토큰이 상관없는 EntryPoint 테스트입니다.");
     }
 
     //관리자 모듈
 
     @PostMapping("/admin-login")
-    public UserResponse adminLogin(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
+    public ResponseEntity<UserResponse> adminLogin(@RequestBody LoginRequest loginRequest, HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse){
         List<Object> accessTokenAndRefreshTokenAndResponse = userService.adminLogin(loginRequest, httpServletRequest);
         httpServletResponse.addHeader("accessToken", accessTokenAndRefreshTokenAndResponse.get(0).toString());
         httpServletResponse.addHeader("refreshToken", accessTokenAndRefreshTokenAndResponse.get(1).toString());
 
-        return (UserResponse) accessTokenAndRefreshTokenAndResponse.get(2);
+        return ResponseEntity.ok((UserResponse) accessTokenAndRefreshTokenAndResponse.get(2));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/all-users-info")
-    public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable) {
-        return userService.getAllUsersInfo(pageable);
+    public ResponseEntity<Page<UserInfoResponse>> getAllUsersInfo(Pageable pageable) {
+        return ResponseEntity.ok(userService.getAllUsersInfo(pageable));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/hist/{userId}")
-    public Page<UserLoginHistResponse> getUserLoginHistByAdmin(@PathVariable Long userId, Pageable pageable) {
-        return userService.getUserLoginHist(userId, pageable);
+    public ResponseEntity<Page<UserLoginHistResponse>> getUserLoginHistByAdmin(@PathVariable Long userId, Pageable pageable) {
+        return ResponseEntity.ok(userService.getUserLoginHist(userId, pageable));
     }
 }
