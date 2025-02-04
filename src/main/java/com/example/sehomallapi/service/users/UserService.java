@@ -77,7 +77,7 @@ public class UserService {
         String email = signupRequest.getEmail();
         String password = signupRequest.getPassword();
 
-        if(!email.matches(".+@.+\\..+")){
+        if(!email.matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")){
             throw new BadRequestException("이메일을 정확히 입력해주세요.", email);
         } else if (signupRequest.getNickname().matches("01\\d{9}")){
             throw new BadRequestException("전화번호를 이름으로 사용할수 없습니다.",signupRequest.getNickname());
