@@ -14,8 +14,8 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if(request.getHeader("Token") != null){
-            response.sendRedirect("/user/entrypoint?token=" + request.getHeader("Token"));
+        if(request.getHeader("accessToken") != null){
+            response.sendRedirect("/user/entrypoint?accessToken=" + request.getHeader("accessToken"));
         }else{
             response.sendRedirect("/user/entrypoint");
         }
