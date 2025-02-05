@@ -13,4 +13,6 @@ public class UserLoginHistResponse {
     private Long histId;
     private Long userId;
     private String loginAt;
+    private String clientIp;
+    private String userAgent;
 }

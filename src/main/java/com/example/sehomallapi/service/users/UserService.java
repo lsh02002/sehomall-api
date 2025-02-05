@@ -261,6 +261,8 @@ public class UserService {
                         .histId(hist.getId())
                         .userId(hist.getUser().getId())
                         .loginAt(hist.getLoginAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                        .clientIp(hist.getClientIp())
+                        .userAgent(hist.getUserAgent())
                         .build());
     }
 
