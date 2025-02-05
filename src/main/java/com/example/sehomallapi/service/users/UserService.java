@@ -329,8 +329,8 @@ public class UserService {
     }
 
     public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable){
-        List<UserInfoResponse> userInfoResponses = userRepository.findAll(pageable)
-                .stream().map(user->UserInfoResponse.builder()
+        return userRepository.findAll(pageable)
+                .map(user->UserInfoResponse.builder()
                         .userId(user.getId())
                         .nickname(user.getNickname())
                         .name(user.getName())
@@ -342,13 +342,7 @@ public class UserService {
                         .userStatus(user.getUserStatus())
                         .createAt(user.getCreateAt().toString())
                         .deleteAt(user.getDeleteAt().toString())
-                        .build()).toList();
-
-        PageRequest pageRequest = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
-        int start = (int) pageRequest.getOffset();
-        int end = Math.min((start + pageRequest.getPageSize()), userInfoResponses.size());
-
-        return new PageImpl<>(userInfoResponses.subList(start, end), pageRequest, userInfoResponses.size());
+                        .build());
     }
 
     private static String getClientIP(HttpServletRequest request) {
