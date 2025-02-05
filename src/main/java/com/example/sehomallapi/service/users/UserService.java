@@ -342,8 +342,8 @@ public class UserService {
                         .gender(user.getGender())
                         .birthDate(user.getBirthDate().toString())
                         .userStatus(user.getUserStatus())
-                        .createAt(user.getCreateAt().toString())
-                        .deleteAt(user.getDeleteAt().toString())
+                        .createAt(user.getCreateAt() != null ? user.getCreateAt().toString() : null)
+                        .deleteAt(user.getDeleteAt() != null ? user.getDeleteAt().toString() : null)
                         .build());
     }
 
