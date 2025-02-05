@@ -79,7 +79,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/notices/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/api/notices/**").hasAnyRole("USER")
                                 // user controller
-                                .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/hist/**", "/user/test1").hasAnyRole("USER")
+                                .requestMatchers(HttpMethod.GET, "/user/info/**", "/user/hist/**", "/user/test1/**","/user/all-users-info/**").hasAnyRole("USER")
                                 .requestMatchers(HttpMethod.DELETE, "/user/logout/**", "/user/withdrawal").hasAnyRole("USER")
                                 // 지정하지 않은 나머지는 Jwt 토큰이 상관없는 엔트리포인트입니다.
                                 .requestMatchers( "/**").permitAll())
