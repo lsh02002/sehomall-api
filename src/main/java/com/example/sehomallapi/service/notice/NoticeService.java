@@ -32,10 +32,8 @@ public class NoticeService {
 
     @CachePut(key = "'all'", value = "notice")
     public Page<NoticeResponse> getAllNotices(Pageable pageable) {
-        List<NoticeResponse> noticeResponses = noticeRepository.findAll(pageable).stream()
-                .map(this::convertToNoticeResponse).toList();
-
-        return new PageImpl<>(noticeResponses, pageable, noticeResponses.size());
+        return noticeRepository.findAll(pageable)
+                .map(this::convertToNoticeResponse);
     }
 
     @CachePut(key = "#id", value = "notice")
@@ -51,10 +49,8 @@ public class NoticeService {
 
     @CachePut(key = "#userId", value = "notice")
     public Page<NoticeResponse> getNoticesByUserId(Long userId, Pageable pageable) {
-        List<NoticeResponse> noticeResponses = noticeRepository.findByUserId(userId, pageable).stream()
-                .map(this::convertToNoticeResponse).toList();
-
-        return new PageImpl<>(noticeResponses, pageable, noticeResponses.size());
+        return noticeRepository.findByUserId(userId, pageable)
+                .map(this::convertToNoticeResponse);
     }
 
     @Transactional

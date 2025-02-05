@@ -156,7 +156,7 @@ public class UserService {
         }
         User user;
 
-        if(request.getEmail().matches(".+@.+\\..+")) {
+        if(request.getEmail().matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")) {
             user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("입력하신 이메일의 계정을 찾을 수 없습니다.", request.getEmail()));
         } else {
             throw new BadRequestException("이메일이 잘못 입력되었습니다.", request.getEmail());
@@ -279,7 +279,7 @@ public class UserService {
         }
         User user;
 
-        if(request.getEmail().matches(".+@.+\\..+")) {
+        if(request.getEmail().matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")) {
             user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("입력하신 이메일의 계정을 찾을 수 없습니다.", request.getEmail()));
         } else {
             throw new BadRequestException("이메일이 잘못 입력되었습니다.", request.getEmail());
