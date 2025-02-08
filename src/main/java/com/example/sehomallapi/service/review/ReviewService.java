@@ -15,9 +15,7 @@ import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.service.item.FileService;
 import com.example.sehomallapi.service.item.ItemService;
-import com.example.sehomallapi.service.payment.PaymentService;
 import com.example.sehomallapi.web.dto.item.FileResponse;
-import com.example.sehomallapi.web.dto.item.ItemResponse;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
 import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
@@ -32,7 +30,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +39,7 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
     private final PaymentRepository paymentRepository;
-    private final PaymentItemRepository paymentItemRepository;
     private final FileService fileService;
-    private final ItemService itemService;
 
     @CachePut(key = "'all'", value = "review")
     public Page<ReviewResponse> getAllReviews(Pageable pageable) {
@@ -60,9 +55,9 @@ public class ReviewService {
         return convertToReviewResponse(review);
     }
 
-    @CachePut(key = "#email", value = "review")
-    public Page<ReviewResponse> getReviewsByUserEmail(String email, Pageable pageable) {
-        return reviewRepository.findByUserEmail(email, pageable)
+    @CachePut(key = "#userId", value = "review")
+    public Page<ReviewResponse> getReviewsByUserId(Long userId, Pageable pageable) {
+        return reviewRepository.findByUserId(userId, pageable)
                 .map(this::convertToReviewResponse);
 
     }

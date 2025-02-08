@@ -2,7 +2,6 @@ package com.example.sehomallapi.web.controller.review;
 
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.review.ReviewService;
-import com.example.sehomallapi.web.dto.item.ItemResponse;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
 import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/review")
@@ -45,7 +43,7 @@ public class ReviewController {
 
     @GetMapping("/user")
     public ResponseEntity<Page<ReviewResponse>> getAllReviewsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
-        return ResponseEntity.ok(reviewService.getReviewsByUserEmail(customUserDetails.getEmail(), pageable));
+        return ResponseEntity.ok(reviewService.getReviewsByUserId(customUserDetails.getId(), pageable));
     }
 
     @PostMapping

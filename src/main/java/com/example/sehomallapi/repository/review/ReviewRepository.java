@@ -5,6 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
-    Page<Review> findByUserEmail(String email, Pageable pageable);
+    Page<Review> findByUserId(Long userId, Pageable pageable);
     Page<Review> findByItemId(Long itemId, Pageable pageable);
 }
