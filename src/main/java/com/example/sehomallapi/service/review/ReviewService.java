@@ -185,13 +185,15 @@ public class ReviewService {
         List<ReviewedItemResponse> unReviewedItems = new ArrayList<>();
 
         for(Payment payment : payments){
-            List<PaymentItem> paymentItems = payment.getPaymentItems();
-            for(PaymentItem paymentItem : paymentItems){
-                if(payment.getOrderStatus()== OrderStatus.COMPLETED && !reviewedItemRepository.existsByItemIdAndUserId(paymentItem.getItem().getId(), payment.getUser().getId())){
-                    unReviewedItems.add(ReviewedItemResponse.builder()
-                            .id(paymentItem.getItem().getId())
-                            .name(paymentItem.getItem().getName())
-                            .build());
+            if(payment.getOrderStatus()== OrderStatus.COMPLETED) {
+                List<PaymentItem> paymentItems = payment.getPaymentItems();
+                for (PaymentItem paymentItem : paymentItems) {
+                    if (!reviewedItemRepository.existsByItemIdAndUserId(paymentItem.getItem().getId(), payment.getUser().getId())) {
+                        unReviewedItems.add(ReviewedItemResponse.builder()
+                                .id(paymentItem.getItem().getId())
+                                .name(paymentItem.getItem().getName())
+                                .build());
+                    }
                 }
             }
         }
