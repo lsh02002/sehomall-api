@@ -32,7 +32,7 @@ public class PaymentService {
     public PaymentResponse createPayment(Long userId, PaymentRequest paymentRequest) {
         if(paymentRequest.getDeliveryName().trim().isEmpty() || paymentRequest.getDeliveryName().length()>30) {
             throw new BadRequestException("이름은 비어있지 않고 30자리 이하여야 합니다.", paymentRequest.getDeliveryName());
-        } else if(!paymentRequest.getEmail().matches(".+@.+\\..+")){
+        } else if(!paymentRequest.getEmail().matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")){
             throw new BadRequestException("이메일을 정확히 입력해주세요.", paymentRequest.getEmail());
         } else if (paymentRequest.getDeliveryName().matches("01\\d{9}")){
             throw new BadRequestException("전화번호를 이름으로 사용할수 없습니다.",paymentRequest.getDeliveryName());
