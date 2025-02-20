@@ -176,19 +176,17 @@ public class ReviewService {
     @Transactional
     @CachePut(key = "#userId", value = "review")
     public List<ReviewedItemResponse> getUnReviewedItems(Long userId) {
-        List<Payment> payments = paymentRepository.findByUserId(userId);
+        List<Payment> payments = paymentRepository.findByUserIdAndOrderStatus(userId, OrderStatus.COMPLETED);
         List<ReviewedItemResponse> unReviewedItems = new ArrayList<>();
 
         for(Payment payment : payments){
-            if(payment.getOrderStatus()== OrderStatus.COMPLETED) {
-                List<PaymentItem> paymentItems = payment.getPaymentItems();
-                for (PaymentItem paymentItem : paymentItems) {
-                    if (!reviewedItemRepository.existsByItemIdAndUserId(paymentItem.getItem().getId(), payment.getUser().getId())) {
-                        unReviewedItems.add(ReviewedItemResponse.builder()
-                                .id(paymentItem.getItem().getId())
-                                .name(paymentItem.getItem().getName())
-                                .build());
-                    }
+            List<PaymentItem> paymentItems = payment.getPaymentItems();
+            for (PaymentItem paymentItem : paymentItems) {
+                if (!reviewedItemRepository.existsByItemIdAndUserId(paymentItem.getItem().getId(), payment.getUser().getId())) {
+                    unReviewedItems.add(ReviewedItemResponse.builder()
+                            .id(paymentItem.getItem().getId())
+                            .name(paymentItem.getItem().getName())
+                            .build());
                 }
             }
         }
