@@ -159,12 +159,12 @@ public class UserService {
         if(request.getEmail().matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")) {
             user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("입력하신 이메일의 계정을 찾을 수 없습니다.", request.getEmail()));
         } else {
-            throw new BadRequestException("이메일이 잘못 입력되었습니다.", request.getEmail());
+            throw new BadRequestException("이메일이나 비밀번호가 잘못 입력되었습니다.", null);
         }
         String p1 = user.getPassword();
 
         if(!passwordEncoder.matches(request.getPassword(), p1)){
-            throw new CustomBadCredentialsException("비밀번호가 일치하지 않습니다.", request.getPassword());
+            throw new BadRequestException("이메일이나 비밀번호가 잘못 입력되었습니다.", null);
         }
 
         if(user.getUserStatus().equals("탈퇴")){
@@ -284,12 +284,12 @@ public class UserService {
         if(request.getEmail().matches("^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$")) {
             user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("입력하신 이메일의 계정을 찾을 수 없습니다.", request.getEmail()));
         } else {
-            throw new BadRequestException("이메일이 잘못 입력되었습니다.", request.getEmail());
+            throw new BadRequestException("이메일이나 비밀번호가 잘못 입력되었습니다.", null);
         }
         String p1 = user.getPassword();
 
         if(!passwordEncoder.matches(request.getPassword(), p1)){
-            throw new CustomBadCredentialsException("비밀번호가 일치하지 않습니다.", request.getPassword());
+            throw new BadRequestException("이메일이나 비밀번호가 잘못 입력되었습니다.", null);
         }
 
         if(user.getUserStatus().equals("탈퇴")){
