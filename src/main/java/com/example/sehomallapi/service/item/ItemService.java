@@ -4,6 +4,7 @@ import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
 import com.example.sehomallapi.repository.users.User;
+import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
@@ -31,6 +32,7 @@ import java.util.Optional;
 public class ItemService {
     private final ItemRepository itemRepository;
     private final FileService fileService;
+    private final UserRepository userRepository;
 
     @CachePut(key = "'all'", value = "item")
     public Page<ItemResponse> getAllItems(Pageable pageable) {
@@ -39,9 +41,9 @@ public class ItemService {
     }
 
     @Transactional
-    @CachePut(key = "#user.id", value = "item")
-    public Page<ItemResponse> getAllItemsByUser(User user, Pageable pageable) {
-        return itemRepository.findAllByUser(user, pageable)
+    @CachePut(key = "#userId", value = "item")
+    public Page<ItemResponse> getAllItemsByUser(Long userId, Pageable pageable) {
+        return itemRepository.findAllByUserId(userId, pageable)
                 .map(this::convertToItemResponse);
     }
 
@@ -64,8 +66,8 @@ public class ItemService {
     }
 
     @Transactional
-    @CachePut(key = "#user.id", value = "item")
-    public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> files, User user) {
+    @CachePut(key = "#userId", value = "item")
+    public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> files, Long userId) {
 
         if(itemRequest.getName().trim().isEmpty()){
             throw new BadRequestException("상품명이 비어있습니다", null);
@@ -89,7 +91,7 @@ public class ItemService {
         updateFileFromRequest(item, files);
 
         // 연관관계 형성
-        item.setUser(user);
+        item.setUser(userRepository.findById(userId).orElseThrow(()->new NotFoundException("해당 유저를 찾을 수 없습니다.", userId)));
 
         // item 저장
         itemRepository.save(item);
@@ -98,14 +100,14 @@ public class ItemService {
     }
 
     @Transactional
-    @CachePut(key = "#user.id", value = "item")
-    public ItemResponse updateItem(Long id, ItemRequest itemRequest, List<MultipartFile> files, User user) {
+    @CachePut(key = "#userId", value = "item")
+    public ItemResponse updateItem(Long id, ItemRequest itemRequest, List<MultipartFile> files, Long userId) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
             Item item = optionalItem.get();
 
             // user 검증
-            if (!user.getId().equals(item.getUser().getId())) {
+            if (!userId.equals(item.getUser().getId())) {
                 throw new NotAcceptableException("아이템 업데이트 실패: 유저가 아닙니다.", item.getUser().getNickname());
             }
 

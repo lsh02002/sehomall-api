@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Page<Item> findAllByUser(User user, Pageable pageable);
+    Page<Item> findAllByUserId(Long userId, Pageable pageable);
     Optional<Item> findByIdAndUserId(Long id, Long userId);
     Page<Item> findByCategory(String category, Pageable pageable);
     Boolean existsByName(String name);
