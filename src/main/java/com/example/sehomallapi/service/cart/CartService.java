@@ -39,7 +39,7 @@ public class CartService {
         Boolean itemChecked = cartItemRequest.getChecked();
 
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
-        Integer itemQuantity = item.getQuantity();
+        Integer itemQuantity = item.getCount();
 
         CartItem cartItem = cartItemRepository.findByCartAndItem(cart, item);
 

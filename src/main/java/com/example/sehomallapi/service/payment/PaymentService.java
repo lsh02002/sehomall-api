@@ -93,7 +93,7 @@ public class PaymentService {
                 for(PaymentItem paymentItem : paymentItems) {
                     Item item = paymentItem.getItem();
 
-                    item.setQuantity(item.getQuantity() + paymentItem.getCount());
+                    item.setCount(item.getCount() + paymentItem.getCount());
                     itemRepository.save(item);
                 }
             }
@@ -121,11 +121,11 @@ public class PaymentService {
         Item item = itemRepository.findById(itemRequest.getItemId())
                 .orElseThrow(() -> new NotFoundException("Item not found", itemRequest.getItemId()));
 
-        if(itemRequest.getCount() > item.getQuantity()){
-            throw new NotAcceptableException("상품 재고는 " + item.getQuantity() + "개입니다.",item.getQuantity());
+        if(itemRequest.getCount() > item.getCount()){
+            throw new NotAcceptableException("상품 재고는 " + item.getCount() + "개입니다.",item.getCount());
         }
 
-        item.setQuantity(item.getQuantity() - itemRequest.getCount());
+        item.setCount(item.getCount() - itemRequest.getCount());
         itemRepository.save(item);
 
         return PaymentItem.builder()
@@ -158,7 +158,7 @@ public class PaymentService {
         Item item = paymentItem.getItem();
         ItemResponse itemResponse = ItemResponse.builder()
                 .id(item.getId())
-                .quantity(item.getQuantity())
+                .count(item.getCount())
                 .price(item.getPrice())
                 .size(item.getSize())
                 .careGuide(item.getCareGuide())

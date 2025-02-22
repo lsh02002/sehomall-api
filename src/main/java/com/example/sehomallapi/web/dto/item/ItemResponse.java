@@ -11,7 +11,7 @@ import java.util.List;
 @Builder
 public class ItemResponse {
     private Long id;
-    private int quantity;
+    private int count;
     private int price;
     private String size;
     private String careGuide;

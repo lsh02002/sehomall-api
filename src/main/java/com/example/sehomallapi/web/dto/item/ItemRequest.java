@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ItemRequest {
-    private int quantity;
+    private int count;
     private int price;
     private String size;
     private String careGuide;

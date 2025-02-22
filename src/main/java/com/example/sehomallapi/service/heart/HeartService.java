@@ -82,7 +82,7 @@ public class HeartService {
         Page<Heart> hearts = heartRepository.findAllByUserId(userId, pageable);
         return hearts.map(heart -> ItemResponse.builder()
                 .id(heart.getItem().getId())
-                .quantity(heart.getItem().getQuantity())
+                .count(heart.getItem().getCount())
                 .price(heart.getItem().getPrice())
                 .size(heart.getItem().getSize())
                 .careGuide(heart.getItem().getCareGuide())
