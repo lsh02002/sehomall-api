@@ -3,13 +3,17 @@ package com.example.sehomallapi.web.controller.cart;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.cart.CartService;
 import com.example.sehomallapi.web.dto.cart.CartAllResponse;
+import com.example.sehomallapi.web.dto.cart.CartAllSearchResponse;
 import com.example.sehomallapi.web.dto.cart.CartItemRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
+import java.util.List;
+
+@Controller
 @RequiredArgsConstructor
 @RequestMapping("/cart")
 public class CartController {
