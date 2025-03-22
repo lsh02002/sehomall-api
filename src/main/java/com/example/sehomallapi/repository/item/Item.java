@@ -6,7 +6,6 @@ import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 

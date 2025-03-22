@@ -14,7 +14,6 @@ import com.example.sehomallapi.service.exceptions.BadRequestException;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.service.item.FileService;
-import com.example.sehomallapi.service.item.ItemService;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
@@ -142,7 +141,7 @@ public class ReviewService {
                 review.setRating(reviewRequest.getRating());
             }
             if(reviewRequest.getItemId() != null){
-                review.setItem(itemRepository.findById(reviewRequest.getItemId()).get());
+                review.setItem(itemRepository.findById(reviewRequest.getItemId()).orElseThrow(()->new NotFoundException("해당 상품을 찾을 수 없습니다.", reviewRequest.getItemId())));
             }
 
             reviewRepository.save(review);

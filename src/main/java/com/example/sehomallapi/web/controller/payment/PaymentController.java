@@ -2,7 +2,6 @@ package com.example.sehomallapi.web.controller.payment;
 
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.payment.PaymentService;
-import com.example.sehomallapi.web.dto.payment.PaymentHistResponse;
 import com.example.sehomallapi.web.dto.payment.PaymentRequest;
 import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;

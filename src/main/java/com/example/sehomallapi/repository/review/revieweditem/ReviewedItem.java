@@ -1,7 +1,6 @@
 package com.example.sehomallapi.repository.review.revieweditem;
 
 import com.example.sehomallapi.repository.item.Item;
-import com.example.sehomallapi.repository.payment.Payment;
 import com.example.sehomallapi.repository.users.User;
 import jakarta.persistence.*;
 import lombok.*;

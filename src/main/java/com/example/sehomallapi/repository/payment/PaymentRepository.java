@@ -1,6 +1,5 @@
 package com.example.sehomallapi.repository.payment;
 
-import com.example.sehomallapi.repository.users.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

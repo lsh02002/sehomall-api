@@ -3,7 +3,6 @@ package com.example.sehomallapi.web.controller.heart;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.heart.HeartService;
 import com.example.sehomallapi.service.item.ItemService;
-import com.example.sehomallapi.web.dto.heart.HeartRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;

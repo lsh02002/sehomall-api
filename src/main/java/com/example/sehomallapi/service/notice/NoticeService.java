@@ -2,26 +2,20 @@ package com.example.sehomallapi.service.notice;
 
 import com.example.sehomallapi.repository.notice.Notice;
 import com.example.sehomallapi.repository.notice.NoticeRepository;
-import com.example.sehomallapi.repository.review.Review;
 import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
-import com.example.sehomallapi.service.users.UserService;
 import com.example.sehomallapi.web.dto.notice.NoticeRequest;
 import com.example.sehomallapi.web.dto.notice.NoticeResponse;
-import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Objects;
 
 @Service
