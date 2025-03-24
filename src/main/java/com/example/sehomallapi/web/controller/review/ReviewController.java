@@ -1,12 +1,12 @@
 package com.example.sehomallapi.web.controller.review;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.review.ReviewService;
 import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
 import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,7 +22,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @GetMapping
-    public ResponseEntity<Page<ReviewResponse>> getAllReviews(Pageable pageable) {
+    public ResponseEntity<RestPage<ReviewResponse>> getAllReviews(Pageable pageable) {
         return ResponseEntity.ok(reviewService.getAllReviews(pageable));
     }
 
@@ -32,7 +32,7 @@ public class ReviewController {
     }
 
     @GetMapping("/items/{id}")
-    public ResponseEntity<Page<ReviewResponse>> getReviewByItemId(@PathVariable Long id, Pageable pageable) {
+    public ResponseEntity<RestPage<ReviewResponse>> getReviewByItemId(@PathVariable Long id, Pageable pageable) {
         return ResponseEntity.ok(reviewService.getReviewsByItemId(id, pageable));
     }
 
@@ -42,7 +42,7 @@ public class ReviewController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<ReviewResponse>> getAllReviewsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+    public ResponseEntity<RestPage<ReviewResponse>> getAllReviewsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
         return ResponseEntity.ok(reviewService.getReviewsByUserId(customUserDetails.getId(), pageable));
     }
 

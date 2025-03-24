@@ -1,5 +1,6 @@
 package com.example.sehomallapi.service.notice;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.notice.Notice;
 import com.example.sehomallapi.repository.notice.NoticeRepository;
 import com.example.sehomallapi.repository.users.User;
@@ -11,6 +12,7 @@ import com.example.sehomallapi.web.dto.notice.NoticeResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,13 +26,13 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
 
-    @CachePut(key = "'all'", value = "notice")
-    public Page<NoticeResponse> getAllNotices(Pageable pageable) {
-        return noticeRepository.findAll(pageable)
-                .map(this::convertToNoticeResponse);
+    @Cacheable(key = "'all'", value = "notice")
+    public RestPage<NoticeResponse> getAllNotices(Pageable pageable) {
+        return new RestPage<>(noticeRepository.findAll(pageable)
+                .map(this::convertToNoticeResponse));
     }
 
-    @CachePut(key = "#id", value = "notice")
+    @Cacheable(key = "#id", value = "notice")
     public NoticeResponse getNoticeById(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(()->new NotFoundException("해당 게시물을 찾을 수 없습니다.", null));
@@ -41,10 +43,10 @@ public class NoticeService {
         return convertToNoticeResponse(savedNotice);
     }
 
-    @CachePut(key = "#userId", value = "notice")
-    public Page<NoticeResponse> getNoticesByUserId(Long userId, Pageable pageable) {
-        return noticeRepository.findByUserId(userId, pageable)
-                .map(this::convertToNoticeResponse);
+    @Cacheable(key = "#userId", value = "notice")
+    public RestPage<NoticeResponse> getNoticesByUserId(Long userId, Pageable pageable) {
+        return new RestPage<>(noticeRepository.findByUserId(userId, pageable)
+                .map(this::convertToNoticeResponse));
     }
 
     @Transactional

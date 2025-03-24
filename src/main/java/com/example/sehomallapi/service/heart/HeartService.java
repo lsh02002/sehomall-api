@@ -1,5 +1,6 @@
 package com.example.sehomallapi.service.heart;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.heart.Heart;
 import com.example.sehomallapi.repository.heart.HeartRepository;
 import com.example.sehomallapi.repository.item.File;
@@ -15,6 +16,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -72,15 +74,15 @@ public class HeartService {
         heartRepository.delete(heart);
     }
 
-    @CachePut(key = "#userId", value = "heart")
+    @Cacheable(key = "#userId", value = "heart")
     public Boolean isHearted(Long userId, Long itemId) {
         return heartRepository.existsByUserIdAndItemId(userId, itemId);
     }
 
-    @CachePut(key = "#userId", value = "heart")
-    public Page<ItemResponse> getMyHeartedItems(Long userId, Pageable pageable) {
+    @Cacheable(key = "#userId", value = "heart")
+    public RestPage<ItemResponse> getMyHeartedItems(Long userId, Pageable pageable) {
         Page<Heart> hearts = heartRepository.findAllByUserId(userId, pageable);
-        return hearts.map(heart -> ItemResponse.builder()
+        return new RestPage<>(hearts.map(heart -> ItemResponse.builder()
                 .id(heart.getItem().getId())
                 .count(heart.getItem().getCount())
                 .price(heart.getItem().getPrice())
@@ -96,7 +98,7 @@ public class HeartService {
                 .createAt(heart.getItem().getCreateAt().toString())
                 .files(heart.getItem().getFiles().stream().map(this::convertToFileResponse).toList())
                 .reviewCount((long) heart.getItem().getReviews().size())
-                .build());
+                .build()));
     }
 
     private FileResponse convertToFileResponse(File file) {

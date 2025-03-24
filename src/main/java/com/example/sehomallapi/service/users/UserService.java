@@ -1,5 +1,6 @@
 package com.example.sehomallapi.service.users;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.config.redis.RedisUtil;
 import com.example.sehomallapi.config.security.JwtTokenProvider;
 import com.example.sehomallapi.repository.cart.Cart;
@@ -255,15 +256,15 @@ public class UserService {
         return new UserResponse(200, "회원탈퇴 완료 되었습니다.", user.getName());
     }
 
-    public Page<UserLoginHistResponse> getUserLoginHist(Long userId, Pageable pageable) {
-        return userLoginHistRepository.findByUserId(userId, pageable)
+    public RestPage<UserLoginHistResponse> getUserLoginHist(Long userId, Pageable pageable) {
+        return new RestPage<>(userLoginHistRepository.findByUserId(userId, pageable)
                 .map(hist->UserLoginHistResponse.builder()
                         .histId(hist.getId())
                         .userId(hist.getUser().getId())
                         .loginAt(hist.getLoginAt().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
                         .clientIp(hist.getClientIp())
                         .userAgent(hist.getUserAgent())
-                        .build());
+                        .build()));
     }
 
     public boolean isNicknameExisted(String nickname){
@@ -330,8 +331,8 @@ public class UserService {
         return Arrays.asList(jwtTokenProvider.createAccessToken(user.getEmail()), newRefreshToken, authResponse);
     }
 
-    public Page<UserInfoResponse> getAllUsersInfo(Pageable pageable){
-        return userRepository.findAll(pageable)
+    public RestPage<UserInfoResponse> getAllUsersInfo(Pageable pageable){
+        return new RestPage<>(userRepository.findAll(pageable)
                 .map(user->UserInfoResponse.builder()
                         .userId(user.getId())
                         .nickname(user.getNickname())
@@ -344,7 +345,7 @@ public class UserService {
                         .userStatus(user.getUserStatus())
                         .createAt(user.getCreateAt() != null ? user.getCreateAt().toString() : null)
                         .deleteAt(user.getDeleteAt() != null ? user.getDeleteAt().toString() : null)
-                        .build());
+                        .build()));
     }
 
     private static String getClientIP(HttpServletRequest request) {

@@ -6,8 +6,6 @@ import com.example.sehomallapi.repository.cart.CartItemRepository;
 import com.example.sehomallapi.repository.cart.CartRepository;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
-import com.example.sehomallapi.repository.users.User;
-import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.cart.CartAllResponse;
@@ -57,7 +55,7 @@ public class CartService {
         return cartItemRequest;
     }
 
-    @CachePut(key = "#userId", value = "cart")
+    @Cacheable(key = "#userId", value = "cart")
     public CartAllResponse findCartItems(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         Long cartId = cart.getId();
@@ -96,7 +94,7 @@ public class CartService {
         return cartItemRequest;
     }
 
-    @CachePut(key = "#userId", value = "cart")
+    @Cacheable(key = "#userId", value = "cart")
     public Integer getItemCount(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         return cartItemRepository.countByCart(cart);

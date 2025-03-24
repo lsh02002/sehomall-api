@@ -7,6 +7,8 @@ import java.util.HashSet;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentHistResponse {
     private String email;
 

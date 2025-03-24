@@ -1,5 +1,6 @@
 package com.example.sehomallapi.service.item;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
@@ -34,21 +35,21 @@ public class ItemService {
     private final FileService fileService;
     private final UserRepository userRepository;
 
-    @CachePut(key = "'all'", value = "item")
-    public Page<ItemResponse> getAllItems(Pageable pageable) {
-        return itemRepository.findAll(pageable)
-                .map(this::convertToItemResponse);
+    @Cacheable(key = "'all'", value = "item")
+    public RestPage<ItemResponse> getAllItems(Pageable pageable) {
+        return new RestPage<>(itemRepository.findAll(pageable)
+                .map(this::convertToItemResponse));
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "item")
-    public Page<ItemResponse> getAllItemsByUser(Long userId, Pageable pageable) {
-        return itemRepository.findAllByUserId(userId, pageable)
-                .map(this::convertToItemResponse);
+    @Cacheable(key = "#userId", value = "item")
+    public RestPage<ItemResponse> getAllItemsByUser(Long userId, Pageable pageable) {
+        return new RestPage<>(itemRepository.findAllByUserId(userId, pageable)
+                .map(this::convertToItemResponse));
     }
 
     @Transactional
-    @CachePut(key = "#id", value = "item")
+    @Cacheable(key = "#id", value = "item")
     public ItemResponse getItemById(Long id) {
         Optional<Item> item = itemRepository.findById(id);
         item.get().setViews(item.get().getViews()+1);
@@ -59,10 +60,10 @@ public class ItemService {
     }
 
     @Transactional
-    @CachePut(key = "'all'", value = "item")
-    public Page<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
-        return itemRepository.findByCategory(category, pageable)
-                .map(this::convertToItemResponse);
+    @Cacheable(key = "'all'", value = "item")
+    public RestPage<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
+        return new RestPage<>(itemRepository.findByCategory(category, pageable)
+                .map(this::convertToItemResponse));
     }
 
     @Transactional
@@ -137,9 +138,9 @@ public class ItemService {
         return item.getHeartCount();
     }
 
-    public Page<ItemResponse> getItemsByKeyword(String keyword, Pageable pageable) {
-        return itemRepository.findByKeyword(keyword, pageable)
-                .map(this::convertToItemResponse);
+    public RestPage<ItemResponse> getItemsByKeyword(String keyword, Pageable pageable) {
+        return new RestPage<>(itemRepository.findByKeyword(keyword, pageable)
+                .map(this::convertToItemResponse));
     }
 
     private ItemResponse convertToItemResponse(Item item) {

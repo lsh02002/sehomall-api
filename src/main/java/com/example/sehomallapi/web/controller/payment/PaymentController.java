@@ -1,11 +1,11 @@
 package com.example.sehomallapi.web.controller.payment;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.payment.PaymentService;
 import com.example.sehomallapi.web.dto.payment.PaymentRequest;
 import com.example.sehomallapi.web.dto.payment.PaymentResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +28,7 @@ public class PaymentController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<PaymentResponse>> getPaymentsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+    public ResponseEntity<RestPage<PaymentResponse>> getPaymentsByUser(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
         return ResponseEntity.ok(paymentService.getPaymentsByUserId(customUserDetails.getId(), pageable));
     }
 

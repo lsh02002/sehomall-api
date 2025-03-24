@@ -1,12 +1,11 @@
 package com.example.sehomallapi.web.dto.users;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequest {
     private String email;
     private String name;

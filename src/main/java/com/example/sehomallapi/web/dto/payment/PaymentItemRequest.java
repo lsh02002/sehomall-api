@@ -1,12 +1,12 @@
 package com.example.sehomallapi.web.dto.payment;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PaymentItemRequest {
     private Long itemId;
     private String itemName;

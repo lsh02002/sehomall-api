@@ -1,5 +1,6 @@
 package com.example.sehomallapi.service.review;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.item.File;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
@@ -21,7 +22,7 @@ import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
-import org.springframework.data.domain.Page;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,13 +41,13 @@ public class ReviewService {
     private final PaymentRepository paymentRepository;
     private final FileService fileService;
 
-    @CachePut(key = "'all'", value = "review")
-    public Page<ReviewResponse> getAllReviews(Pageable pageable) {
-        return reviewRepository.findAll(pageable)
-                .map(this::convertToReviewResponse);
+    @Cacheable(key = "'all'", value = "review")
+    public RestPage<ReviewResponse> getAllReviews(Pageable pageable) {
+        return new RestPage<>(reviewRepository.findAll(pageable)
+                .map(this::convertToReviewResponse));
     }
 
-    @CachePut(key = "#reviewId", value = "review")
+    @Cacheable(key = "#reviewId", value = "review")
     public ReviewResponse getReviewById(Long reviewId) {
         Review review = reviewRepository.findById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Reivew를 찾을 수 없습니다. review id :", reviewId));
@@ -54,17 +55,17 @@ public class ReviewService {
         return convertToReviewResponse(review);
     }
 
-    @CachePut(key = "#userId", value = "review")
-    public Page<ReviewResponse> getReviewsByUserId(Long userId, Pageable pageable) {
-        return reviewRepository.findByUserId(userId, pageable)
-                .map(this::convertToReviewResponse);
+    @Cacheable(key = "#userId", value = "review")
+    public RestPage<ReviewResponse> getReviewsByUserId(Long userId, Pageable pageable) {
+        return new RestPage<>(reviewRepository.findByUserId(userId, pageable)
+                .map(this::convertToReviewResponse));
 
     }
 
-    @CachePut(key = "#itemId", value = "review")
-    public Page<ReviewResponse> getReviewsByItemId(Long itemId, Pageable pageable) {
-        return reviewRepository.findByItemId(itemId, pageable)
-                .map(this::convertToReviewResponse);
+    @Cacheable(key = "#itemId", value = "review")
+    public RestPage<ReviewResponse> getReviewsByItemId(Long itemId, Pageable pageable) {
+        return new RestPage<>(reviewRepository.findByItemId(itemId, pageable)
+                .map(this::convertToReviewResponse));
    }
 
    @Transactional

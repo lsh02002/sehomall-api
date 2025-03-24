@@ -1,11 +1,11 @@
 package com.example.sehomallapi.web.controller.notice;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.notice.NoticeService;
 import com.example.sehomallapi.web.dto.notice.NoticeRequest;
 import com.example.sehomallapi.web.dto.notice.NoticeResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,7 +19,7 @@ public class NoticeController {
     private final NoticeService noticeService;
 
     @GetMapping
-    public ResponseEntity<Page<NoticeResponse>> getNotices(Pageable pageable) {
+    public ResponseEntity<RestPage<NoticeResponse>> getNotices(Pageable pageable) {
         return ResponseEntity.ok(noticeService.getAllNotices(pageable));
     }
 
@@ -29,7 +29,7 @@ public class NoticeController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<Page<NoticeResponse>> getNoticesByUser(@AuthenticationPrincipal CustomUserDetails userDetails, Pageable pageable) {
+    public ResponseEntity<RestPage<NoticeResponse>> getNoticesByUser(@AuthenticationPrincipal CustomUserDetails userDetails, Pageable pageable) {
         return ResponseEntity.ok(noticeService.getNoticesByUserId(userDetails.getId(), pageable));
     }
 

@@ -1,5 +1,6 @@
 package com.example.sehomallapi.web.controller.users;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.users.userDetails.CustomUserDetails;
 import com.example.sehomallapi.service.exceptions.AccessDeniedException;
 import com.example.sehomallapi.service.exceptions.NotAcceptableException;
@@ -67,7 +68,7 @@ public class UserController {
     }
 
     @GetMapping("/hist")
-    public ResponseEntity<Page<UserLoginHistResponse>> getUserLoginHist(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
+    public ResponseEntity<RestPage<UserLoginHistResponse>> getUserLoginHist(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
         return ResponseEntity.ok(userService.getUserLoginHist(customUserDetails.getId(), pageable));
     }
 
@@ -106,13 +107,13 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/all-users-info")
-    public ResponseEntity<Page<UserInfoResponse>> getAllUsersInfo(Pageable pageable) {
+    public ResponseEntity<RestPage<UserInfoResponse>> getAllUsersInfo(Pageable pageable) {
         return ResponseEntity.ok(userService.getAllUsersInfo(pageable));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @GetMapping("/hist/{userId}")
-    public ResponseEntity<Page<UserLoginHistResponse>> getUserLoginHistByAdmin(@PathVariable Long userId, Pageable pageable) {
+    public ResponseEntity<RestPage<UserLoginHistResponse>> getUserLoginHistByAdmin(@PathVariable Long userId, Pageable pageable) {
         return ResponseEntity.ok(userService.getUserLoginHist(userId, pageable));
     }
 }

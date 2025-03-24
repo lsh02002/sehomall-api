@@ -1,5 +1,6 @@
 package com.example.sehomallapi.service.payment;
 
+import com.example.sehomallapi.config.RestPage;
 import com.example.sehomallapi.repository.item.Item;
 import com.example.sehomallapi.repository.item.ItemRepository;
 import com.example.sehomallapi.repository.payment.*;
@@ -61,10 +62,10 @@ public class PaymentService {
         return convertToPaymentResponse(payment, paymentItems);
     }
 
-    public Page<PaymentResponse> getPaymentsByUserId(Long userId, Pageable pageable) {
+    public RestPage<PaymentResponse> getPaymentsByUserId(Long userId, Pageable pageable) {
         Page<Payment> payments = paymentRepository.findByUserId(userId, pageable);
 
-        return payments.map(payment->PaymentResponse.builder()
+        return new RestPage<>(payments.map(payment->PaymentResponse.builder()
                 .id(payment.getId())
                 .productSum(payment.getProductSum())
                 .email(payment.getEmail())
@@ -75,7 +76,7 @@ public class PaymentService {
                 .orderStatus(payment.getOrderStatus().toString())
                 .createAt(payment.getCreateAt().toString())
                 .items(payment.getPaymentItems().stream().map(this::convertToPaymentItemResponse).toList())
-                .build());
+                .build()));
 
     }
 
