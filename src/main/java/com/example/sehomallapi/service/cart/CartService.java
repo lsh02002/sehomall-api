@@ -54,7 +54,7 @@ public class CartService {
         return cartItemRequest;
     }
 
-    @Cacheable(key = "#userId", value = "cart")
+    @Transactional
     public CartAllResponse findCartItems(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         Long cartId = cart.getId();
