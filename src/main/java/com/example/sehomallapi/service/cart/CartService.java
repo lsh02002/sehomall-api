@@ -29,7 +29,6 @@ public class CartService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    @CachePut(key="#userId", value = "cart")
     public CartItemRequest addCartItem(Long userId , CartItemRequest cartItemRequest) {
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
@@ -80,7 +79,6 @@ public class CartService {
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "cart")
     public CartItemRequest updateCartItem(Long userId, CartItemRequest cartItemRequest){
         Cart cart = cartRepository.findByUserId(userId);
         Long itemId = cartItemRequest.getItemId();
@@ -94,21 +92,18 @@ public class CartService {
         return cartItemRequest;
     }
 
-    @Cacheable(key = "#userId", value = "cart")
     public Integer getItemCount(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         return cartItemRepository.countByCart(cart);
     }
 
     @Transactional
-    @CacheEvict(key = "#userId", value = "cart")
     public void deleteCartItem(Long userId, Long itemId){
         Cart cart = cartRepository.findByUserId(userId);
         cartItemRepository.deleteByCartAndItemId(cart, itemId);
     }
 
     @Transactional
-    @CacheEvict(key = "#userId", value = "cart")
     public void deleteAllCartItems(Long userId){
         Cart cart = cartRepository.findByUserId(userId);
         cartItemRepository.deleteAllByCart(cart);
