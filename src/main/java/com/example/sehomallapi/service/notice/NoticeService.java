@@ -26,13 +26,13 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
 
-    @Cacheable(key = "'all'+pageable.pageNumber", value = "notice")
+    @Cacheable(key = "'all'+#pageable.pageNumber", value = "notice")
     public RestPage<NoticeResponse> getAllNotices(Pageable pageable) {
         return new RestPage<>(noticeRepository.findAll(pageable)
                 .map(this::convertToNoticeResponse));
     }
 
-    @Cacheable(key = "#id", value = "notice")
+    @Cacheable(key = "'id'+#id", value = "notice")
     public NoticeResponse getNoticeById(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(()->new NotFoundException("해당 게시물을 찾을 수 없습니다.", null));
