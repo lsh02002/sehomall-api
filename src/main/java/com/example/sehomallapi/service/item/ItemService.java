@@ -35,21 +35,21 @@ public class ItemService {
     private final FileService fileService;
     private final UserRepository userRepository;
 
-    @Cacheable(key = "'all'", value = "item")
+    @Cacheable(key = "'all'+#pageable.pageNumber", value = "item")
     public RestPage<ItemResponse> getAllItems(Pageable pageable) {
         return new RestPage<>(itemRepository.findAll(pageable)
                 .map(this::convertToItemResponse));
     }
 
     @Transactional
-    @Cacheable(key = "#userId", value = "item")
+    @Cacheable(key = "'user'+#userId+#pageable.pageNumber", value = "item")
     public RestPage<ItemResponse> getAllItemsByUser(Long userId, Pageable pageable) {
         return new RestPage<>(itemRepository.findAllByUserId(userId, pageable)
                 .map(this::convertToItemResponse));
     }
 
     @Transactional
-    @Cacheable(key = "#id", value = "item")
+    @Cacheable(key = "'item'+#id", value = "item")
     public ItemResponse getItemById(Long id) {
         Optional<Item> item = itemRepository.findById(id);
         item.get().setViews(item.get().getViews()+1);
@@ -60,7 +60,7 @@ public class ItemService {
     }
 
     @Transactional
-    @Cacheable(key = "'all'", value = "item")
+    @Cacheable(key = "'cate'+#pageable.pageNumber", value = "item")
     public RestPage<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
         return new RestPage<>(itemRepository.findByCategory(category, pageable)
                 .map(this::convertToItemResponse));
@@ -101,7 +101,7 @@ public class ItemService {
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "item")
+    @CachePut(key = "'update'+#userId", value = "item")
     public ItemResponse updateItem(Long id, ItemRequest itemRequest, List<MultipartFile> files, Long userId) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
@@ -130,7 +130,7 @@ public class ItemService {
         itemRepository.deleteById(id);
     }
 
-    @CachePut(key = "#itemId", value = "item")
+    @Cacheable(key = "'heart'+#itemId", value = "item")
     public Long getItemHeartCount(Long itemId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", itemId));

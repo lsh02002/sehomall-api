@@ -26,7 +26,7 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
 
-    @Cacheable(key = "'all'", value = "notice")
+    @Cacheable(key = "'all'+pageable.pageNumber", value = "notice")
     public RestPage<NoticeResponse> getAllNotices(Pageable pageable) {
         return new RestPage<>(noticeRepository.findAll(pageable)
                 .map(this::convertToNoticeResponse));
@@ -43,7 +43,7 @@ public class NoticeService {
         return convertToNoticeResponse(savedNotice);
     }
 
-    @Cacheable(key = "#userId", value = "notice")
+    @Cacheable(key = "'user'+#userId+#pageable.pageNumber", value = "notice")
     public RestPage<NoticeResponse> getNoticesByUserId(Long userId, Pageable pageable) {
         return new RestPage<>(noticeRepository.findByUserId(userId, pageable)
                 .map(this::convertToNoticeResponse));

@@ -79,7 +79,7 @@ public class HeartService {
         return heartRepository.existsByUserIdAndItemId(userId, itemId);
     }
 
-    @Cacheable(key = "#userId", value = "heart")
+    @Cacheable(key = "'items'+#userId", value = "heart")
     public RestPage<ItemResponse> getMyHeartedItems(Long userId, Pageable pageable) {
         Page<Heart> hearts = heartRepository.findAllByUserId(userId, pageable);
         return new RestPage<>(hearts.map(heart -> ItemResponse.builder()

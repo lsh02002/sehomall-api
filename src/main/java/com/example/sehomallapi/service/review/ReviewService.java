@@ -41,7 +41,7 @@ public class ReviewService {
     private final PaymentRepository paymentRepository;
     private final FileService fileService;
 
-    @Cacheable(key = "'all'", value = "review")
+    @Cacheable(key = "'all'+#pageable.pageNumber", value = "review")
     public RestPage<ReviewResponse> getAllReviews(Pageable pageable) {
         return new RestPage<>(reviewRepository.findAll(pageable)
                 .map(this::convertToReviewResponse));
@@ -55,14 +55,14 @@ public class ReviewService {
         return convertToReviewResponse(review);
     }
 
-    @Cacheable(key = "#userId", value = "review")
+    @Cacheable(key = "'userId'+#userId+#pageable.pageNumber", value = "review")
     public RestPage<ReviewResponse> getReviewsByUserId(Long userId, Pageable pageable) {
         return new RestPage<>(reviewRepository.findByUserId(userId, pageable)
                 .map(this::convertToReviewResponse));
 
     }
 
-    @Cacheable(key = "#itemId", value = "review")
+    @Cacheable(key = "'itemId'+#itemId+#pageable.pageNumber", value = "review")
     public RestPage<ReviewResponse> getReviewsByItemId(Long itemId, Pageable pageable) {
         return new RestPage<>(reviewRepository.findByItemId(itemId, pageable)
                 .map(this::convertToReviewResponse));
