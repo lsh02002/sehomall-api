@@ -74,7 +74,7 @@ public class HeartService {
         heartRepository.delete(heart);
     }
 
-    @Cacheable(key = "#userId", value = "heart")
+    @Cacheable(key = "#userId+#itemId", value = "heart")
     public Boolean isHearted(Long userId, Long itemId) {
         return heartRepository.existsByUserIdAndItemId(userId, itemId);
     }

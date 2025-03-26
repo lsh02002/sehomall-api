@@ -12,9 +12,6 @@ import com.example.sehomallapi.web.dto.cart.CartAllResponse;
 import com.example.sehomallapi.web.dto.cart.CartAllSearchResponse;
 import com.example.sehomallapi.web.dto.cart.CartItemRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
