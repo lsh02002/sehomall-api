@@ -13,8 +13,6 @@ import com.example.sehomallapi.service.exceptions.NotFoundException;
 import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemRequest;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -62,7 +60,7 @@ public class ItemService {
     }
 
     @Transactional
-    @Cacheable(key = "'cate'+#category.hashCode()", value = "item")
+    @Cacheable(key = "'cate'+#category", value = "item")
     public RestPage<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
         return new RestPage<>(itemRepository.findByCategory(category, pageable)
                 .map(this::convertToItemResponse));
