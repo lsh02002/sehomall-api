@@ -60,7 +60,7 @@ public class ItemService {
     }
 
     @Transactional
-    @Cacheable(key = "'cate'+#category", value = "item")
+    @Cacheable(key = "'cate'+#category.hashCode()", value = "item")
     public RestPage<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
         return new RestPage<>(itemRepository.findByCategory(category, pageable)
                 .map(this::convertToItemResponse));
