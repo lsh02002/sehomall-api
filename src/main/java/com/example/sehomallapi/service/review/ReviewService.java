@@ -20,9 +20,11 @@ import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
 import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,10 +43,28 @@ public class ReviewService {
     private final PaymentRepository paymentRepository;
     private final FileService fileService;
 
-    @Cacheable(key = "'all'+#pageable.pageNumber", value = "review")
+    private final ApplicationContext applicationContext;
+
     public RestPage<ReviewResponse> getAllReviews(Pageable pageable) {
+        ReviewService self = applicationContext.getBean(ReviewService.class);
+
         return new RestPage<>(reviewRepository.findAll(pageable)
-                .map(this::convertToReviewResponse));
+                .map(self::getReview));
+    }
+
+    public RestPage<ReviewResponse> getReviewsByUserId(Long userId, Pageable pageable) {
+        ReviewService self = applicationContext.getBean(ReviewService.class);
+
+        return new RestPage<>(reviewRepository.findByUserId(userId, pageable)
+                .map(self::getReview));
+
+    }
+
+    public RestPage<ReviewResponse> getReviewsByItemId(Long itemId, Pageable pageable) {
+        ReviewService self = applicationContext.getBean(ReviewService.class);
+
+        return new RestPage<>(reviewRepository.findByItemId(itemId, pageable)
+                .map(self::getReview));
     }
 
     @Cacheable(key = "#reviewId", value = "review")
@@ -55,22 +75,14 @@ public class ReviewService {
         return convertToReviewResponse(review);
     }
 
-    @Cacheable(key = "'userId'+#userId+#pageable.pageNumber", value = "review")
-    public RestPage<ReviewResponse> getReviewsByUserId(Long userId, Pageable pageable) {
-        return new RestPage<>(reviewRepository.findByUserId(userId, pageable)
-                .map(this::convertToReviewResponse));
-
+    @Cacheable(key = "#review.id", value = "review")
+    public ReviewResponse getReview(Review review) {
+        return convertToReviewResponse(review);
     }
 
-    @Cacheable(key = "'itemId'+#itemId+#pageable.pageNumber", value = "review")
-    public RestPage<ReviewResponse> getReviewsByItemId(Long itemId, Pageable pageable) {
-        return new RestPage<>(reviewRepository.findByItemId(itemId, pageable)
-                .map(this::convertToReviewResponse));
-   }
-
    @Transactional
-   @CachePut(key = "#userId", value = "review")
-   public Boolean createReview(Long userId, ReviewRequest reviewRequest, List<MultipartFile> files) {
+   @CachePut(key = "#result.id", value = "review")
+   public ReviewResponse createReview(Long userId, ReviewRequest reviewRequest, List<MultipartFile> files) {
        try {
            User user = userRepository.findById(userId)
                    .orElseThrow(() -> new NotFoundException("입력하신 아이디로 회원을 찾을 수 없습니다.", userId));
@@ -118,15 +130,15 @@ public class ReviewService {
 
            reviewedItemRepository.save(reviewedItem);
 
-           return true;
+           return convertToReviewResponse(review);
        } catch (ConflictException e) {
-           return false;
+           return null;
        }
    }
 
    @Transactional
-   @CachePut(key = "#userId", value = "review")
-    public Boolean updateReview(Long userId, Long reviewId, ReviewRequest reviewRequest, List<MultipartFile> files) {
+   @CachePut(key = "#reviewId", value = "review")
+    public ReviewResponse updateReview(Long userId, Long reviewId, ReviewRequest reviewRequest, List<MultipartFile> files) {
         try {
             Review review = reviewRepository.findById(reviewId)
                     .orElseThrow(()-> new NotFoundException("게시글을 찾을 수 없습니다.", reviewId));
@@ -148,14 +160,14 @@ public class ReviewService {
             reviewRepository.save(review);
             updateFileFromReviewRequest(review, files);
 
-            return true;
+            return convertToReviewResponse(review);
         } catch (ConflictException e) {
-            return false;
+            return null;
         }
     }
 
    @Transactional
-   @CacheEvict(key = "#userId", value = "review")
+   @CacheEvict(key = "#reviewId", value = "review")
     public Boolean deleteReview(Long userId, Long reviewId) {
        try {
            Review review = reviewRepository.findById(reviewId)
@@ -174,7 +186,6 @@ public class ReviewService {
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "review")
     public List<ReviewedItemResponse> getUnReviewedItems(Long userId) {
         List<Payment> payments = paymentRepository.findByUserIdAndOrderStatus(userId, OrderStatus.COMPLETED);
         List<ReviewedItemResponse> unReviewedItems = new ArrayList<>();

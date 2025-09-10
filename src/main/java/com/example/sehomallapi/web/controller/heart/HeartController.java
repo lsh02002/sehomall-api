@@ -30,16 +30,6 @@ public class HeartController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/count/{id}")
-    public Long heartCount(@PathVariable("id")Long itemId) {
-        return itemService.getItemHeartCount(itemId);
-    }
-
-    @GetMapping("/is-hearted/{id}")
-    public Boolean isHearted(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable("id") Long itemId) {
-        return heartService.isHearted(customUserDetails.getId(), itemId);
-    }
-
     @GetMapping("/user")
     public ResponseEntity<?> getMyHeartedItems(@AuthenticationPrincipal CustomUserDetails customUserDetails, Pageable pageable) {
         return ResponseEntity.ok(heartService.getMyHeartedItems(customUserDetails.getId(), pageable));

@@ -47,12 +47,12 @@ public class ReviewController {
     }
 
     @PostMapping
-    public ResponseEntity<Boolean> createReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ReviewRequest reviewRequest, @RequestPart(required = false) List<MultipartFile> files) {
+    public ResponseEntity<?> createReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestPart ReviewRequest reviewRequest, @RequestPart(required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(reviewService.createReview(customUserDetails.getId(), reviewRequest, files));
     }
 
     @PutMapping("/{reviewId}")
-    public ResponseEntity<Boolean> updateReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long reviewId, @RequestPart ReviewRequest reviewRequest, @RequestPart(required = false) List<MultipartFile> files) {
+    public ResponseEntity<?> updateReview(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long reviewId, @RequestPart ReviewRequest reviewRequest, @RequestPart(required = false) List<MultipartFile> files) {
         return ResponseEntity.ok(reviewService.updateReview(customUserDetails.getId(), reviewId, reviewRequest, files));
     }
 

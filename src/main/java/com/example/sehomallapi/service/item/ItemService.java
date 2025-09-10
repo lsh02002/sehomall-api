@@ -14,9 +14,11 @@ import com.example.sehomallapi.web.dto.item.FileResponse;
 import com.example.sehomallapi.web.dto.item.ItemRequest;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,39 +37,57 @@ public class ItemService {
     private final FileService fileService;
     private final UserRepository userRepository;
 
-    @Cacheable(key = "'all'+#pageable.pageNumber", value = "item")
+    private final ApplicationContext applicationContext;
+
+    @Transactional
     public RestPage<ItemResponse> getAllItems(Pageable pageable) {
+        ItemService self = applicationContext.getBean(ItemService.class);
+
         return new RestPage<>(itemRepository.findAll(pageable)
-                .map(this::convertToItemResponse));
+                .map(self::_getItem));
     }
 
     @Transactional
-    @Cacheable(key = "'user'+#userId+#pageable.pageNumber", value = "item")
     public RestPage<ItemResponse> getAllItemsByUser(Long userId, Pageable pageable) {
+        ItemService self = applicationContext.getBean(ItemService.class);
+
         return new RestPage<>(itemRepository.findAllByUserId(userId, pageable)
-                .map(this::convertToItemResponse));
+                .map(self::_getItem));
     }
 
     @Transactional
-    @Cacheable(key = "'item'+#id", value = "item")
-    public ItemResponse getItemById(Long id) {
-        Optional<Item> item = itemRepository.findById(id);
-        item.get().setViews(item.get().getViews()+1);
-
-        return item.map(this::convertToItemResponse)
-                .orElseThrow(()->new NotFoundException("해당 아이템을 찾을 수 없습니다.", id));
-
-    }
-
-    @Transactional
-    @Cacheable(key = "'cate'+#category.hashCode()", value = "item")
     public RestPage<ItemResponse> getAllItemsByCategory(String category, Pageable pageable) {
+        ItemService self = applicationContext.getBean(ItemService.class);
+
         return new RestPage<>(itemRepository.findByCategory(category, pageable)
-                .map(this::convertToItemResponse));
+                .map(self::_getItem));
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "item")
+    public RestPage<ItemResponse> getItemsByKeyword(String keyword, Pageable pageable) {
+        ItemService self = applicationContext.getBean(ItemService.class);
+
+        return new RestPage<>(itemRepository.findByKeyword(keyword, pageable)
+                .map(self::_getItem));
+    }
+
+    @Transactional
+    @Cacheable(key = "#id", value = "item")
+    public ItemResponse getItemById(Long id) {
+        Item item = itemRepository.findById(id)
+                .orElseThrow(()->new NotFoundException("해당 아이템을 찾을 수 없습니다.", id));
+        item.setViews(item.getViews()+1);
+
+        return convertToItemResponse(item);
+    }
+
+    @Cacheable(key = "#item.id", value = "item")
+    public ItemResponse _getItem(Item item) {
+        return convertToItemResponse(item);
+    }
+
+    @Transactional
+    @CachePut(key = "#result.id", value = "item")
     public ItemResponse createItem(ItemRequest itemRequest, List<MultipartFile> files, Long userId) {
 
         if(itemRequest.getName().trim().isEmpty()){
@@ -101,7 +121,7 @@ public class ItemService {
     }
 
     @Transactional
-    @CachePut(key = "'update'+#userId", value = "item")
+    @CachePut(key = "#result.id", value = "item")
     public ItemResponse updateItem(Long id, ItemRequest itemRequest, List<MultipartFile> files, Long userId) {
         Optional<Item> optionalItem = itemRepository.findById(id);
         if (optionalItem.isPresent()) {
@@ -121,7 +141,7 @@ public class ItemService {
     }
 
     @Transactional
-    @CacheEvict(key = "#userId", value = "item")
+    @CacheEvict(key = "#id", value = "item")
     public void deleteItem(Long id, Long userId) {
         Item item = itemRepository.findByIdAndUserId(id, userId)
                         .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", id));
@@ -130,20 +150,7 @@ public class ItemService {
         itemRepository.deleteById(id);
     }
 
-    @Cacheable(key = "'heart'+#itemId", value = "item")
-    public Long getItemHeartCount(Long itemId) {
-        Item item = itemRepository.findById(itemId)
-                .orElseThrow(()-> new NotFoundException("상품을 찾을 수 없습니다.", itemId));
-
-        return item.getHeartCount();
-    }
-
-    public RestPage<ItemResponse> getItemsByKeyword(String keyword, Pageable pageable) {
-        return new RestPage<>(itemRepository.findByKeyword(keyword, pageable)
-                .map(this::convertToItemResponse));
-    }
-
-    private ItemResponse convertToItemResponse(Item item) {
+    public ItemResponse convertToItemResponse(Item item) {
         String createAt = item.getCreateAt().format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
 
         return ItemResponse.builder()

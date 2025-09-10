@@ -35,19 +35,19 @@ public class NoticeController {
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PostMapping
-    public ResponseEntity<NoticeResponse> createNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody NoticeRequest noticeRequest) {
+    public ResponseEntity<?> createNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody NoticeRequest noticeRequest) {
         return ResponseEntity.ok(noticeService.createNotice(customUserDetails.getId(), noticeRequest));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @PutMapping("/{noticeId}")
-    public ResponseEntity<Boolean> updateNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long noticeId, @RequestBody NoticeRequest noticeRequest) {
+    public ResponseEntity<?> updateNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long noticeId, @RequestBody NoticeRequest noticeRequest) {
         return ResponseEntity.ok(noticeService.updateNotice(customUserDetails.getId(), noticeId, noticeRequest));
     }
 
     @PreAuthorize("hasAnyRole('ROLE_ADMIN')")
     @DeleteMapping("/{noticeId}")
-    public ResponseEntity<Boolean> deleteNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long noticeId) {
+    public ResponseEntity<?> deleteNotice(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long noticeId) {
         return ResponseEntity.ok(noticeService.deleteNotice(customUserDetails.getId(), noticeId));
     }
 }

@@ -7,12 +7,15 @@ import com.example.sehomallapi.repository.users.User;
 import com.example.sehomallapi.repository.users.UserRepository;
 import com.example.sehomallapi.service.exceptions.ConflictException;
 import com.example.sehomallapi.service.exceptions.NotFoundException;
+import com.example.sehomallapi.service.item.ItemService;
 import com.example.sehomallapi.web.dto.notice.NoticeRequest;
 import com.example.sehomallapi.web.dto.notice.NoticeResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,13 +29,23 @@ public class NoticeService {
     private final NoticeRepository noticeRepository;
     private final UserRepository userRepository;
 
-    @Cacheable(key = "'all'+#pageable.pageNumber", value = "notice")
+    private final ApplicationContext applicationContext;
+
     public RestPage<NoticeResponse> getAllNotices(Pageable pageable) {
+        NoticeService self = applicationContext.getBean(NoticeService.class);
+
         return new RestPage<>(noticeRepository.findAll(pageable)
-                .map(this::convertToNoticeResponse));
+                .map(self::getNotice));
     }
 
-    @Cacheable(key = "'id'+#id", value = "notice")
+    public RestPage<NoticeResponse> getNoticesByUserId(Long userId, Pageable pageable) {
+        NoticeService self = applicationContext.getBean(NoticeService.class);
+
+        return new RestPage<>(noticeRepository.findByUserId(userId, pageable)
+                .map(self::getNotice));
+    }
+
+    @Cacheable(key = "#id", value = "notice")
     public NoticeResponse getNoticeById(Long id) {
         Notice notice = noticeRepository.findById(id)
                 .orElseThrow(()->new NotFoundException("해당 게시물을 찾을 수 없습니다.", null));
@@ -43,14 +56,13 @@ public class NoticeService {
         return convertToNoticeResponse(savedNotice);
     }
 
-    @Cacheable(key = "'user'+#userId+#pageable.pageNumber", value = "notice")
-    public RestPage<NoticeResponse> getNoticesByUserId(Long userId, Pageable pageable) {
-        return new RestPage<>(noticeRepository.findByUserId(userId, pageable)
-                .map(this::convertToNoticeResponse));
+    @Cacheable(key = "#notice.id", value = "notice")
+    public NoticeResponse getNotice(Notice notice) {
+        return convertToNoticeResponse(notice);
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "notice")
+    @CachePut(key = "#result.id", value = "notice")
     public NoticeResponse createNotice(Long userId, NoticeRequest noticeRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new NotFoundException("해당 회원을 찾을 수 없습니다.", null));
@@ -68,8 +80,8 @@ public class NoticeService {
     }
 
     @Transactional
-    @CachePut(key = "#userId", value = "notice")
-    public Boolean updateNotice(Long userId, Long noticeId, NoticeRequest noticeRequest) {
+    @CachePut(key = "#result.id", value = "notice")
+    public NoticeResponse updateNotice(Long userId, Long noticeId, NoticeRequest noticeRequest) {
         try {
             Notice notice = noticeRepository.findById(noticeId)
                     .orElseThrow(()-> new NotFoundException("게시글을 찾을 수 없습니다.", noticeId));
@@ -88,14 +100,14 @@ public class NoticeService {
 
             noticeRepository.save(notice);
 
-            return true;
+            return convertToNoticeResponse(notice);
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
     @Transactional
-    @CacheEvict(key = "#userId", value = "notice")
+    @CacheEvict(key = "#noticeId", value = "notice")
     public Boolean deleteNotice(Long userId, Long noticeId) {
         try {
             Notice notice = noticeRepository.findById(noticeId)
