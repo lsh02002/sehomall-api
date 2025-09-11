@@ -20,7 +20,6 @@ import com.example.sehomallapi.web.dto.review.ReviewRequest;
 import com.example.sehomallapi.web.dto.review.ReviewResponse;
 import com.example.sehomallapi.web.dto.review.ReviewedItemResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
