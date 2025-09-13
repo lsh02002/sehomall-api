@@ -18,16 +18,19 @@ public class HeartController {
     private final HeartService heartService;
     private final ItemService itemService;
 
+    @GetMapping("/is-hearted/{id}")
+    public ResponseEntity<?> isHearted(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable("id") Long itemId) {
+        return ResponseEntity.ok(heartService.isHearted(userDetails.getId(), itemId));
+    }
+
     @PostMapping("/{id}")
     public ResponseEntity<?> insert(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable("id") Long itemId) {
-        heartService.insert(customUserDetails.getId(), itemId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(heartService.insert(customUserDetails.getId(), itemId));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable("id") Long itemId) {
-        heartService.delete(customUserDetails.getId(), itemId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(heartService.delete(customUserDetails.getId(), itemId));
     }
 
     @GetMapping("/user")

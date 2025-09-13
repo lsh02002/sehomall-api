@@ -26,6 +26,10 @@ public class HeartService {
     private final ItemRepository itemRepository;
     private final ItemService itemService;
 
+    public Boolean isHearted(Long userId, Long itemId){
+        return heartRepository.existsByUserIdAndItemId(userId, itemId);
+    }
+
     @Transactional
     @CachePut(key = "#itemId", value = "item")
     public ItemResponse insert(Long userId, Long itemId) {
@@ -56,8 +60,8 @@ public class HeartService {
     }
 
     @Transactional
-//    @CachePut(key = "#itemId", value = "item")
-    public void delete(Long userId, Long itemId) {
+    @CachePut(key = "#itemId", value = "item")
+    public ItemResponse delete(Long userId, Long itemId) {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("해당 유저를 찾을 수 없습니다. : " + userId, null));
@@ -72,6 +76,8 @@ public class HeartService {
         itemRepository.save(item);
 
         heartRepository.delete(heart);
+
+        return itemService.convertToItemResponse(item);
     }
 
     public RestPage<ItemResponse> getMyHeartedItems(Long userId, Pageable pageable) {
