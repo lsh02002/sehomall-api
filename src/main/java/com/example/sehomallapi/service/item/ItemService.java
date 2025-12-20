@@ -69,7 +69,7 @@ public class ItemService {
     }
 
     @Transactional
-    @Cacheable(key = "#id", value = "item")
+    @CachePut(key = "#id", value = "item")
     public ItemResponse getItemById(Long id) {
         Item item = itemRepository.findById(id)
                 .orElseThrow(()->new NotFoundException("해당 아이템을 찾을 수 없습니다.", id));
