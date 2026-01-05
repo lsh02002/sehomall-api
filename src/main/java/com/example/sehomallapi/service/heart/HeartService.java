@@ -13,6 +13,7 @@ import com.example.sehomallapi.service.item.ItemService;
 import com.example.sehomallapi.web.dto.item.ItemResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -60,7 +61,7 @@ public class HeartService {
     }
 
     @Transactional
-    @CachePut(key = "#itemId", value = "item")
+    @CacheEvict(key = "#itemId", value = "item")
     public ItemResponse delete(Long userId, Long itemId) {
 
         User user = userRepository.findById(userId)
@@ -82,6 +83,6 @@ public class HeartService {
 
     public RestPage<ItemResponse> getMyHeartedItems(Long userId, Pageable pageable) {
         Page<Heart> hearts = heartRepository.findAllByUserId(userId, pageable);
-        return new RestPage<>(hearts.map(heart -> itemService._getItem(heart.getItem())));
+        return new RestPage<>(hearts.map(heart -> itemService._getItem(heart.getItem().getId(), heart.getItem())));
     }
 }
