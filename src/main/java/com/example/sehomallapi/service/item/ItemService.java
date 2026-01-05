@@ -41,7 +41,7 @@ public class ItemService {
         ItemService self = applicationContext.getBean(ItemService.class);
 
         return new RestPage<>(itemRepository.findAll(pageable)
-                .map(item->self._getItem(item.getId(), item)));
+                .map(self::_getItem));
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class ItemService {
         ItemService self = applicationContext.getBean(ItemService.class);
 
         return new RestPage<>(itemRepository.findAllByUserId(userId, pageable)
-                .map(item->self._getItem(item.getId(), item)));
+                .map(self::_getItem));
     }
 
     @Transactional
@@ -57,7 +57,7 @@ public class ItemService {
         ItemService self = applicationContext.getBean(ItemService.class);
 
         return new RestPage<>(itemRepository.findByCategory(category, pageable)
-                .map(item->self._getItem(item.getId(), item)));
+                .map(self::_getItem));
     }
 
     @Transactional
@@ -65,7 +65,7 @@ public class ItemService {
         ItemService self = applicationContext.getBean(ItemService.class);
 
         return new RestPage<>(itemRepository.findByKeyword(keyword, pageable)
-                .map(item->self._getItem(item.getId(), item)));
+                .map(self::_getItem));
     }
 
     @Transactional
@@ -78,8 +78,8 @@ public class ItemService {
         return convertToItemResponse(item);
     }
 
-    @Cacheable(key = "#itemId", value = "item")
-    public ItemResponse _getItem(Long itemId, Item item) {
+    @Cacheable(key = "#item.id", value = "item")
+    public ItemResponse _getItem(Item item) {
         return convertToItemResponse(item);
     }
 

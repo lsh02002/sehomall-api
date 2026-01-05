@@ -83,6 +83,6 @@ public class HeartService {
 
     public RestPage<ItemResponse> getMyHeartedItems(Long userId, Pageable pageable) {
         Page<Heart> hearts = heartRepository.findAllByUserId(userId, pageable);
-        return new RestPage<>(hearts.map(heart -> itemService._getItem(heart.getItem().getId(), heart.getItem())));
+        return new RestPage<>(hearts.map(heart->itemService._getItem(heart.getItem())));
     }
 }
