@@ -170,23 +170,25 @@ public class ReviewService {
     @Transactional
     @Caching(evict = {
             @CacheEvict(cacheNames = "review", key = "#reviewId"),
-            @CacheEvict(cacheNames = "item", key = "#result.itemId", beforeInvocation = false)
+            @CacheEvict(cacheNames = "item", key = "#result.itemId", beforeInvocation = false, condition = "#result != null && #result.itemId != null")
     })
     public ReviewResponse deleteReview(Long userId, Long reviewId) {
-       try {
-           Review review = reviewRepository.findById(reviewId)
-                   .orElseThrow(()-> new NotFoundException("review를 찾을 수 없습니다.", reviewId));
 
-           if(!Objects.equals(review.getUser().getId(), userId)){
-               throw new ConflictException("사용자가 올바르지 않습니다", userId.toString());
-           }
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException("review를 찾을 수 없습니다.", reviewId));
 
-           reviewRepository.delete(review);
+        if (!Objects.equals(review.getUser().getId(), userId)) {
+            throw new ConflictException("사용자가 올바르지 않습니다", userId.toString());
+        }
 
-           return convertToReviewResponse(review);
-       } catch (ConflictException e) {
-           throw new ConflictException("해당 리뷰가 삭제되지 않았습니다.", reviewId.toString());
-       }
+        ReviewResponse response = convertToReviewResponse(review);
+
+        reviewRepository.delete(review);
+
+        // itemId를 메서드 밖으로 노출시키려면:
+        // 1) response에 itemId가 이미 있으면 OK
+        // 2) 없으면 response에 세팅하거나, 응답을 단순화
+        return response;
     }
 
     @Transactional
