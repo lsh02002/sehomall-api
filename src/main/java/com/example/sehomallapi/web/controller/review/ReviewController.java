@@ -57,7 +57,7 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{reviewId}")
-    public ResponseEntity<Boolean> deleteReview(@AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long reviewId) {
+    public ResponseEntity<?> deleteReview(@AuthenticationPrincipal CustomUserDetails customUserDetails,@PathVariable Long reviewId) {
         return ResponseEntity.ok(reviewService.deleteReview(customUserDetails.getId(), reviewId));
     }
 }
