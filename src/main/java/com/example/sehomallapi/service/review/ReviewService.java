@@ -23,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,6 +82,7 @@ public class ReviewService {
 
    @Transactional
    @CachePut(key = "#result.id", value = "review")
+   @CacheEvict(key = "#result.itemId", value = "item")
    public ReviewResponse createReview(Long userId, ReviewRequest reviewRequest, List<MultipartFile> files) {
        try {
            User user = userRepository.findById(userId)
@@ -165,9 +167,12 @@ public class ReviewService {
         }
     }
 
-   @Transactional
-   @CacheEvict(key = "#reviewId", value = "review")
-    public Boolean deleteReview(Long userId, Long reviewId) {
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "review", key = "#reviewId"),
+            @CacheEvict(cacheNames = "item", key = "#result.itemId", beforeInvocation = false)
+    })
+    public ReviewResponse deleteReview(Long userId, Long reviewId) {
        try {
            Review review = reviewRepository.findById(reviewId)
                    .orElseThrow(()-> new NotFoundException("review를 찾을 수 없습니다.", reviewId));
@@ -178,9 +183,9 @@ public class ReviewService {
 
            reviewRepository.delete(review);
 
-           return true;
+           return convertToReviewResponse(review);
        } catch (ConflictException e) {
-           return false;
+           throw new ConflictException("해당 리뷰가 삭제되지 않았습니다.", reviewId.toString());
        }
     }
 
